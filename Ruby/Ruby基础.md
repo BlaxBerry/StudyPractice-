@@ -6,39 +6,46 @@ Ruby基础
 
 ### 变量类型
 
-- ローカル変数 	
+- **局部变量** 
 
-- グローバル変数
+  > ローカル変数 	
 
-- インスタンス変数、
+- **全局变量**
 
-- クラス変数
+  > グローバル変数
+
+- **实例变量**
+
+  > インスタンス変数
+
+- **类变量**
+
+  > クラス変数
 
 ```ruby
-a = "" 
-$a = ""
+a = ""		# 局部变量
+$a = ""		# 全局变量
 
 class Example
-  @@a = ""
-  @@b = ""
-  def initialize(params1,params2)
-    @a = params1
-    @b = params2
+  @@a = ""  # 类变量
+  def initialize(params)
+    @a = params		# 实例变量
   end
 end
+example = Example.new('')
 ```
 
 
 
-### 変数スコープ
+### 变量作用域
 
-変数には **参照できる範囲** を意味する **スコープ** (範囲)があり
+>  **変数スコープ**  は**参照できる範囲**を意味する
 
-ローカル変数：どこで定義したかによって、スコープが変わる
+---
 
-グローバル変数：どこからでも参照できる
+#### 局部变量
 
-#### local变量
+> ローカル変数：どこで定義したかによって、スコープが変わる
 
 ```ruby
 a = 100
@@ -46,24 +53,28 @@ def fn
     a = 200
     puts a
 end
-fn
 
+fn
 # 200
 ```
 
-函数内部直接使用函数外部定义的local变量，报错
+函数内部直接使用函数外部定义的局部变量，报错
 
 ```ruby
 a = 100
 def fn
     puts a
 end
-fn
 
+fn
 # undefined local variable or method `a' for main:Object (NameError)
 ```
 
+---
+
 #### 全局变量
+
+> グローバル変数：どこからでも参照できる
 
 ```ruby
 $a = 100
@@ -72,14 +83,10 @@ def fn
     a = 200
     puts $a
 end
-fn
 
+fn
 # 100
 ```
-
-
-
-
 
 
 
@@ -94,13 +101,29 @@ name = "Ruby"
 # undefined local variable or method `a' for main:Object (NameError)
 ```
 
+---
 
+#### 并行赋值
+
+```ruby
+a,b,c = 10,20,30
+p a,b,c
+# 10
+# 20
+# 30
+```
+
+交换两个变量的值
+
+```ruby
+a, b = b, c
+```
 
 
 
 ### 式展開
 
-式展開は、文字列の中に変数や計算式の結果などを出力できる機能
+> 式展開は、文字列の中に変数や計算式の結果などを出力できる機能
 
 在字符串中调用变量时，
 
@@ -132,7 +155,11 @@ puts "sum is #{(10+20)/3}"
 
 
 
+
+
 ## 常量
+
+命名建议使用大写字母和下划线_ 
 
 不可再次赋值
 
@@ -156,25 +183,27 @@ hello tom
 
 ## 数据类型
 
-Rubyの世界では、すべてのデータがオブジェクト
+> Rubyの世界では、すべてのデータがオブジェクト
 
-|  类型  | 含义 | 例子 |
-| :----: | :--: | :--: |
-| Number | 数值 |      |
-| String |      |      |
-| Ranges |      |      |
-|  true  |      |      |
-| false  |      |      |
-|  nil   |      |      |
-| Array  |      |      |
-|  Hash  |      |      |
-| Symbol |      |      |
+|  类型  |  含义  | 例子 |
+| :----: | :----: | :--: |
+| Number |  数值  |      |
+| String | 字符串 |      |
+| Ranges |  范围  |      |
+|  true  |   真   |      |
+| false  |   假   |      |
+|  nil   |   空   |      |
+| Array  |  数组  |      |
+|  Hash  |  哈希  |      |
+| Symbol |        |      |
 
-**オブジェクトのクラスを確認・変換**
+
 
 ### 判断类型
 
-通过**数据.class** 判断数据的类型
+> オブジェクトのクラスを確認
+
+通过 **数据.class** 判断数据的类型
 
 ```ruby
 数据.class
@@ -207,29 +236,39 @@ puts /a-z/.class		# Regexp
 | Integer类 | 整数 |
 |  Float类  | 浮点 |
 
-#### 算数操作
+---
 
-- 基本の足し算（**+**）引き算（**-**）掛け算（*****）割り算（**/**）
+#### 加减乘除运算
 
-- べき乗（******）
+> 足し算（**+**）引き算（**-**）掛け算（*****）割り算（**/**）
 
-  指数
+---
 
-  演算子の左辺を右辺の値で累乗します。
+#### 指数运算
 
-  ```ruby
-  puts 3**2
-  # 9 
-  ```
+>  べき乗（******）
+>
+> 演算子の左辺を右辺の値で累乗します。
 
-- 代入演算子 += -= *= /=
+```ruby
+puts 3**2
+# 9 
+```
 
-  ```ruby
-  x += 5
-  x -= 5
-  x *= 5
-  x /= 5  
-  ```
+---
+
+#### 赋值运算符
+
+> 代入演算子 += -= *= /=
+
+```ruby
+x += 5
+x -= 5
+x *= 5
+x /= 5  
+```
+
+
 
 
 
@@ -246,7 +285,7 @@ puts 3 * "1"  # 报错
 
 ---
 
-#### 转义字符
+#### 转义字符 \
 
 文字列リテラル
 
@@ -278,8 +317,6 @@ World
 puts 'Hello \n World'
 # Hello \n World
 ```
-
-
 
 
 
@@ -395,16 +432,194 @@ puts "hello".equal?("hello")
  **配列**
 
 ```ruby
-
+[1，2，3，4]
 ```
 
-Arrayオブジェクトの要素を参照する時
 
-**インデックス** / **添字**
+
+### 获取元素
+
+> Arrayオブジェクトの要素を参照する時，**インデックス** / **添字**
+
+通过数组的序号**index**获取指定元素
+
+---
+
+#### 获取单个指定元素
 
 ```ruby
+数组[index]
 
+数组[-index] # 倒着取
+
+数组.at(index)
 ```
+
+```ruby
+arr = [1,2,3]
+p arr[0]	# 1
+p arr[1]	# 2
+p arr[2]	# 3
+
+p arr[-1] # 3
+
+p arr.at(0) # 1
+```
+
+---
+
+#### 获取范围内的元素
+
+```ruby
+数组[开始序号, 结束序号]
+数组[开始序号..结束序号]
+数组[开始序号...结束序号]
+
+数组.slice(开始序号, 结束序号)
+```
+
+```ruby
+arr = [1,2,3,4,5]
+
+p arr[1..3]		# [2, 3, 4]
+p arr[1,3]		# [2, 3, 4]
+
+p arr.slice(1，3)  # [2, 3, 4]
+```
+
+
+
+### 修改元素
+
+#### 修改单个指定元素
+
+```ruby
+数组[index] = 新的值
+```
+
+```ruby
+arr = [1,2,3,4,5]
+
+arr[0]=9
+arr[arr.length-1]=100
+p arr 
+# [9, 2, 3, 4, 100]
+```
+
+---
+
+#### 修改范围内元素
+
+```ruby
+数组[开始序号,结束序号] = [值，值，值，值]
+```
+
+```ruby
+arr = [1,2,3,4,5]
+
+arr[0,2] = [100,99,90]
+p arr 
+# [100, 99, 98, 3, 4, 5]
+```
+
+
+
+### 插入元素
+
+#### 范围插入元素
+
+```ruby
+数组[插入位置后一个序号,0] =  [值，值，值，值]
+```
+
+```ruby
+arr = [1,1,1,1]
+
+arr[1,0] = [100,90,80]
+p arr
+# [1, 100, 90, 80, 1, 1, 1]
+```
+
+
+
+### 数组合并
+
+#### arr ｜ arr
+
+> 和集合
+
+按照前后顺序合并两个数组中不重复的元素，
+
+重复元素只会保留一个
+
+```ruby
+a = [1,2,3]
+b = [3,3,5]
+
+p a | b
+# [1, 2, 3, 5]
+```
+
+---
+
+#### arr + arr
+
+> 配列の結合
+
+按照前后顺序直接拼接两个数组的元素，
+
+重复元素也合并进去
+
+```ruby
+a = [1,2,3]
+b = [3,3,5]
+
+p a + b
+# [1, 2, 3, 3, 3, 5]
+```
+
+
+
+### 共同元素
+
+#### arr & arr
+
+> 共通集合
+
+获取数组形式的两个数组的重复的元素，只会保留一个
+
+```ruby
+a = [1,2,3]
+b = [3,4,5]
+
+p b & a
+# [3]
+```
+
+---
+
+#### arr - arr
+
+> 集合の差
+
+从一个数组中将包含在另一个数组中的元素全部除去
+
+```ruby
+数组A - 数组B
+# 从 A 中将包含在 B 中的元素全部除去
+```
+
+```ruby
+a = [1,2,3]
+b = [3,4,5,6]
+
+p a - b		# [1, 2]
+p b - a		# [4, 5, 6]
+```
+
+
+
+
 
 **要素の追加**
 
@@ -420,25 +635,15 @@ Arrayオブジェクト << "要素"
 Arrayオブジェクト.push(要素,要素)
 ```
 
-
-
 **要素の削除**
 
 ```ruby
 Arrayオブジェクト.delete_at(index)
 ```
 
-**要素の変更**
-
-```ruby
-Arrayオブジェクト[index] = "変更したい要素"
-```
-
 ```ruby
 
 ```
-
-
 
 
 
@@ -448,11 +653,41 @@ Arrayオブジェクト[index] = "変更したい要素"
 
 ## 范围 Range
 
-演算子式/範囲式
+> 演算子式/範囲式
+
+### ..
+
+包含指定的最高值的范围
 
 ```ruby
-
+最小值..最大值
 ```
+
+```ruby
+p (1..5).to_a
+# [1, 2, 3, 4, 5]
+
+p ('a'..'d').to_a
+# ["a", "b", "c", "d"]
+```
+
+### ...
+
+不包含指定的最高值的范围
+
+```ruby
+最小值...最大值
+```
+
+```ruby
+p (1...5).to_a
+# [1, 2, 3, 4]
+
+p ('a'...'d').to_a
+# ["a", "b", "c"]
+```
+
+
 
 
 
@@ -466,7 +701,7 @@ hash = {
 }
 ```
 
-Hashオブジェクトの要素を参照する時
+> Hashオブジェクトの要素を参照する時
 
 ```ruby
 hash[:name]
@@ -494,7 +729,7 @@ puts symbol_hash
 # {:name=>"andy", :age=28, :address=>"CN"}
 ```
 
-文字列のキーとシンボルのキーを混在させることができ
+> 文字列のキーとシンボルのキーを混在させることができ
 
 ```ruby
 hash = {
@@ -615,6 +850,17 @@ end
 函数名(a,b)
 ```
 
+如调用函数是传参数的个数不对，会报错ArgumentError
+
+```ruby
+def fn(a,b)
+  xxxx
+end
+fn()
+
+#  wrong number of arguments (given 0, expected 2) (ArgumentError)
+```
+
 ---
 
 #### 参数默认值
@@ -632,8 +878,10 @@ end
 
 #### 可变参数
 
+可変長引数
+
 ```ruby
-def 函数名(*params)
+def 函数名(*参数)
   函数体
 end
 
@@ -642,7 +890,14 @@ end
 ```
 
 ```ruby
-
+def fn(a,*params)
+    p a
+    p params
+    p params.class # Array
+end
+fn(1) 			# 1  []
+fn(1,2)			# 1  [2]
+fn(1,2,3) 	# 1  [2,3]
 ```
 
 ```ruby
@@ -676,7 +931,7 @@ fn
 
 
 
-## 语法
+## Ruby语法
 
 **制御構文**
 
@@ -853,7 +1108,126 @@ end
 =end
 ```
 
+```ruby
+sum = 0
+for n in [1, 2, 3, 4, 5, 6, 7]
+  sum += n
+end
+puts sum  # 28
+```
 
+#### each 循环
+
+ブロックの中の処理をレシーバの要素の分だけ繰り返す
+
+```ruby
+?.each do |变量|
+  xxx
+end
+
+
+?.each { |item|
+  xxx
+}
+```
+
+```ruby
+sum = 0
+[1, 2, 3, 4, 5, 6, 7].each do |n|
+  sum += n
+end
+puts sum  # 28
+```
+
+#### times 循环
+
+循环整数次数
+
+```ruby
+整数.times do
+  xxx
+end
+```
+
+写成一行的话，常用 {}
+
+```ruby
+整数.times { xxx }
+```
+
+#### step 循环
+
+```ruby
+开始值.step(结束值, 间隔数) do |变量|
+  xxx
+end
+```
+
+```ruby
+# 从 1 开始到 10，每间隔 3 个数循环一次
+1.step(10,3) do |item|
+    p item
+end
+
+=begin
+1
+4
+7
+10
+=end
+```
+
+#### upto循环
+
+ 从 ？升序循环到 ？
+
+```ruby
+开始值.upto(结束值) do |item|
+  xxxx
+end
+```
+
+```ruby
+# 从 1 循环到 5
+1.upto(5) do |item|
+    p item
+end
+
+=begin
+1
+2
+3
+4
+5
+=end
+```
+
+#### downto循环
+
+从 ？ 降序循环到 ？
+
+```ruby
+开始值.upto(结束值) do |item|
+  xxxx
+end
+```
+
+```ruby
+# 从 5 循环到 1
+5.downto(1) do |item|
+    p item
+end
+
+=begin
+5
+4
+3
+2
+1
+=end
+```
+
+---
 
 #### break
 
@@ -927,55 +1301,699 @@ end
 ## 类 class
 
 ```ruby
+class クラス名
+end
+インスタンス01 = クラス名.new
+インスタンス02 = クラス名.new
+```
 
+```ruby
+class Person
+    def initialize(name='ruby')
+        @name = name   
+    end
+    def say
+        p "hello,i am #@name"
+    end
+end
+
+ruby = Person.new
+ruby.say
+# "hello,i am ruby"
+
+andy = Person.new('andy')
+andy.say
+#	"hello,i am andy"
+
+tom = Person.new('tom')
+tom.say
+#	"hello,i am tom"
 ```
 
 ```ruby
 
 ```
 
-```ruby
 
+
+### 变量
+
+#### 类变量
+
+类变量在变量名之前放@@
+
+类变量被指定了值后，无论生成多少个实例对象，类变量都一致
+
+```ruby
+class Example
+  @@a = 10
+  @@b = 20
+end
 ```
 
 ```ruby
+class Example
+    @@username = "andy"
+    @@userage = 28
 
+    def fn
+        return @@username,@@userage
+    end
+end
+
+example01 = Example.new
+p example01.fn
+# ["andy", 28]
+example02 = Example.new
+p example02.fn
+# ["andy", 28]
 ```
 
+---
 
+#### 实例变量
+
+实例变量在变量名之前放@，由创建实例对象时决定
+
+通过new 方法创建实例对象时传入的参数，在 initialize方法中将参数传给实例变量
+
+```ruby
+class Example
+  def initialize(a,b)
+    @a = a
+    @b = b
+  end 
+end
+```
+
+Ruby的实例变量无法直接在外部获取和修改
+
+需要通过getter和setter
+
+```ruby
+class Example
+   def initialize(a,b)
+    @a = a
+    @b = b
+   end  
+   def fn
+    return @a,@b
+   end
+end
+
+example01 = Example.new('andy',28)
+p example01.fn
+# ["andy", 28]
+example02 = Example.new('tom',15)
+p example02.fn
+# ["tom", 15]
+```
+
+---
+
+#### 访问器 getter
+
+类中的变量不能直接在外部被访问获取
+
+可通过定义访问器(getter)方法，在类的外部读取类中变量
 
 类中的函数可通过 **#** 直接调用实例变量、类变量、global变量
 
 ```ruby
-#@实例变量
-#@@类变量
-#$global变量
+def 访问器
+  #@实例变量
+	#@@类变量
+	#$global变量
+end
 ```
 
 ```ruby
-$a = "aaa"
 class Example
     @@a = "a"
     @@b = "b"
-    def initialize(params1,params2)
-      @a = params1
-      @b = params2
+    def initialize(a,b)
+      @a = a
+      @b = b
     end
-    def say 
+    def get 
         puts "#@a,#@b"
         puts "#@@a,#@@b"
-      	puts "#$a"
     end
 end
 p = Example.new(1,2)
-p.say
+p.get
 
 # 10, 20
 # a, b
-# aaa
+```
+
+#### 设置器 setter 
+
+类中的变量不能直接在外部被修改
+
+可通过定义设置器(setter)方法，在类的外部将参数传入类中变量
+
+```ruby
+def 设置器= （参数）
+  @实例变量 = 参数
+end
+```
+
+```ruby
+class Example
+    def initialize(a,b)
+      @a = a
+      @b = b
+    end
+  
+    def setA=(a) 
+      @a = a
+    end
+    def setB=(b) 
+      @b = b
+    end  
+  
+    def get 
+      return @a,@b
+    end
+end
+p = Example.new(1,2)
+p p.get 	# [1,2]
+p.setA=(3)
+p.setB=(4)
+p p.get 	# [3,4]
+```
+
+---
+
+#### 读写限制
+
+アクセスメゾット　
+
+getter和setter很常用，但是写起来麻烦
+
+所以Ruby又定义了三种属性声明方法来控制类中属性的可读写
+
+|     アクセスメゾット      |           含义            |
+| :-----------------------: | :-----------------------: |
+| **attr_accessor :变量名** | reader+writer，属性可读写 |
+|  **attr_reader :变量名**  |        属性仅可读         |
+|  **attr_writer :变量名**  |       属性仅可修改        |
+
+```ruby
+class Example
+    attr_accessor :name,:age
+
+    def initialize(name,age)
+        @name,@age = name,age
+    end
+end
+
+andy = Example.new('andy',28)
+p andy.name  # 'andy'
+p andy.age	 # 28
+
+andy.name,andy.age = 'AD',10
+p andy.name  # 'AD'
+p andy.age	 # 10
 ```
 
 
+
+### 方法
+
+#### initialize 方法
+
+initializeメソッド（初期化メソッド）
+
+是类的构造函数
+
+```ruby
+class Example
+  def initialize(params1,params2)
+    @a = params1
+    @b = params2
+  end
+end
+```
+
+```ruby
+
+```
+
+---
+
+#### 实例方法
+
+与其他方法的定义一样，但它们只能通过类实例来使用
+
+```ruby
+class 类
+  def 函数名
+    xxx
+  end
+end
+
+实例对象 = 类.new
+实例对象.函数名
+```
+
+```ruby
+class Example
+  def fn
+    p "hello"
+  end
+end
+
+a = Example.new
+a.fn  # hello
+```
+
+---
+
+#### 类方法
+
+即静态方法，
+
+只能被类本身调用，不能被实例调用
+
+```ruby
+class 类
+  def self.函数名
+    xxx
+  end
+end
+
+类.函数名
+类::函数名
+```
+
+```ruby
+class Example
+    def self.fn
+      p "hello"
+    end
+end
+  
+Example.fn  # hello
+Example::fn # hello
+
+p = Example.new
+p.fn  # 报错
+# undefined method `fn' for #<Example:0x00007ff36304c758> (NoMethodError)
+```
+
+---
+
+#### 调用限制
+
+呼び出し制限
+
+Ruby定义了三种权限来控制类中方法的调用： 
+
+| 呼び出し制限  |                      含义                      |
+| :-----------: | :--------------------------------------------: |
+|  **public**   | 方法作为实例方法，仅可被实例对象调用。**默认** |
+|  **private**  |     方法作为类的静态方法，仅类自身可以使用     |
+| **protected** |                   不可被调用                   |
+
+- **单个方法：**
+
+```ruby
+public :methodName
+private :methodName 
+protected :methodName
+```
+
+```ruby
+class Example
+    def a
+        puts "aaa"
+    end
+    public :a
+
+    def b
+        puts "bbb"
+    end
+    private :b
+
+    def c
+        puts "ccc"
+    end
+    protected :c
+end
+
+p = Example.new
+p.a   # aaa
+p.b		# 报错
+# private method `b' called for #<Example:0x00007ffe35918580> (NoMethodError)
+p.c		# 报错
+# protected method `c' called for #<Example:0x00007fc14d920250> (NoMethodError)
+```
+
+- **多个方法：**
+
+```ruby
+class Example
+  public  # 后面定义的方法全都是public
+  def xx
+  end
+  
+	private  # 后面定义的方法全都是private
+  def xx
+  end
+  
+	protected  # 后面定义的方法全都是protected
+  def xx
+  end
+end
+```
+
+```ruby
+class Example
+    public
+    def a
+        puts "aaa"
+    end
+    
+    private
+    def b
+        puts "bbb"
+    end
+    
+    protected
+    def c
+        puts "ccc"
+    end
+end
+
+p = Example.new
+p.a   # aaa
+p.b		# 报错
+# private method `b' called for #<Example:0x00007ffe35918580> (NoMethodError)
+p.c		# 报错
+# protected method `c' called for #<Example:0x00007fc14d920250> (NoMethodError)
+```
+
+用处：实例：
+
+```ruby
+class Example
+    attr_accessor :a,:b		 # 允许在类外访问a,b
+    protected :a=, :b=     # 不允许在类外调用修改a,b的setter方法
+
+    def initialize(a,b)
+        @a,@b = a,b
+    end
+end
+
+p = Example.new(10,20)
+puts p.a	# 10
+puts p.b 	# 20
+
+p.a = 90  # 报错
+# protected method `a=' called for #<Example:0x00007fa28f898620 @a=10, @b=20> (NoMethodError)
+p.b = 90  # 报错
+# protected method `b=' called for #<Example:0x00007fa28f898620 @a=10, @b=20> (NoMethodError)
+```
+
+
+
+### 常量
+
+#### 常量调用
+
+在类的外部访问常量，必须使用 **类名::常量名**
+
+```ruby
+class Example
+    VERSION = '0.0.1'
+
+    def self.showV
+        return VERSION
+    end
+
+    def getV
+        return VERSION
+    end
+end
+
+p Example::VERSION		# "0.0.1"
+p Example.showV 			# "0.0.1"
+
+example = Example.new
+p example.getV				# "0.0.1"
+```
+
+
+
+### 继承
+
+```ruby
+class 父类
+end
+
+class 子类 < 父类
+end
+```
+
+继承父类的所有
+
+```ruby
+class Father
+    def fn
+      p "a"
+    end
+    def self.fun
+      p "static"
+    end
+end
+
+class Son < Father
+end
+
+son = Son.new
+son.fn   # "a"
+
+Son.fun  # "static"
+```
+
+---
+
+#### 确认继承的父类
+
+通过 **superclass**方法，継承元を確認
+
+```ruby
+子类.superclass
+```
+
+```ruby
+class Father
+end
+
+class Son < Father
+end
+
+p Son.superclass
+# Father
+```
+
+---
+
+#### 方法重载
+
+オーバーライド
+
+继承了父类的子类中的同名方法，会重写继承过来的方法，但不会修改父类
+
+```ruby
+class Father
+    def fn
+      p 'a'
+    end
+end
+
+class Son < Father
+    def fn
+      p 'b'
+    end
+end
+
+son = Son.new
+son.fn	 # "b"
+```
+
+```ruby
+
+```
+
+---
+
+#### super
+
+`super`は、親のクラスの同名のメソッド内容をそのまま実行する
+
+```ruby
+
+```
+
+
+
+
+
+## 模块 module
+
+```ruby
+module モジュール名
+end
+```
+
+是一种把 方法、常量组合在一起的方式
+
+```ruby
+module 模块
+  
+  常量 = 值
+  
+  def self.静态方法
+  end
+  
+  def 方法
+  end
+  
+end
+```
+
+类似class，但是模块不能继承，不能有实例对象
+
+
+
+### 模块的静态方法
+
+模块中的方法通过 **模块名.方法名** 的形式获取
+
+其中 的方法也叫做模块的参数
+
+```ruby
+模块名.方法名
+```
+
+```ruby
+module Basic
+    VERSION = '0.0.1'
+
+    def self.showV
+        return VERSION
+    end
+
+    def getV
+        return VERSION
+    end
+
+    def add(a,b)
+        return a+b
+    end
+end
+
+p Basic::VERSION	# '0.0.1'
+
+p Basic.showV			# '0.0.1'
+p Basic::showV		# '0.0.1'
+
+p Basic.getV 			# 报错
+# undefined method `getV' for Basic:Module (NoMethodError)
+p Basic.add(10,20)  # 报错
+# undefined method `getV' for Basic:Module (NoMethodError)
+```
+
+
+
+### 设定为静态方法
+
+不是模块的静态方法，无法通过 **模块.方法** 的形式直接获取
+
+```ruby
+module Basic
+    VERSION = '0.0.1'
+
+    def getV
+        return VERSION
+    end
+end
+
+p Basic.getV  # 报错
+# undefined method `getV' for Basic:Module (NoMethodError)
+```
+
+需要先将其设定为模块的静态方法后，才能通过 **模块.方法** 的形式直接获取
+
+```ruby
+module_function :方法名
+```
+
+```ruby
+module Basic
+    VERSION = '0.0.1'
+
+    def getV
+        return VERSION
+    end
+    def add(a,b)
+        return a+b
+    end
+  
+  	module_function :getV, :add
+end
+
+p Basic.getV  			# '0.0.1'
+p Basic.add(10,20)	# 30
+```
+
+
+
+### include
+
+把模块导入class类的做法叫做 **Mix-in**
+
+class类可通过 **include** 调用模块，并使用其方法和常量，
+
+无法使用模块的静态方法
+
+```ruby
+class 类
+  include 模块
+end
+```
+
+```ruby
+module Basic
+    VERSION = '0.0.1'
+
+    def self.showV
+        return VERSION
+    end
+    def getV
+        return VERSION
+    end
+    def add(a,b)
+        return a+b
+    end
+end
+
+class Example include Basic
+end
+
+p Example::VERSION	# '0.0.1'
+p Example::showV  # 报错
+# undefined method `showV' for Example:Class (NoMethodError)
+p Example.showV	  # 报错 
+# undefined method `showV' for Example:Class (NoMethodError)
+
+e = Example.new
+p e.getV				# '0.0.1' 
+p e.add(10,20)	# 30
+```
 
 ```ruby
 
@@ -985,21 +2003,65 @@ p.say
 
 ```
 
-```ruby
 
+
+
+
+
+
+## 错误 与 例外处理
+
+### 错误处理
+
+#### begin
+
+#### end
+
+```ruby
+begin
+  # 可能会出错的处理逻辑
+  xxx
+rescue => 错误信息变量
+  # 发生错误时
+  xxxx
+end
 ```
 
-```ruby
-
-```
+#### rescue/else/ensure
 
 ```ruby
-
+begin
+    # 可能会出错的处理逻辑
+    xxx
+  
+rescue => e
+    # 发生错误时
+    xxxx
+    puts e # 错误信息
+  
+else
+    # 正常处理时
+    xxxx
+  
+ensure
+    # 最后的收尾工作，
+  	# 无论是否出错，都会执行
+    xxxx
+end
 ```
 
-```ruby
+begin相当与JS的try
 
+rescue相当于JS的catch
+
+```js
+try{}
+catch(e){}
 ```
+
+
+
+
 
 
 
@@ -1036,8 +2098,6 @@ p.say
 
 
 
-
-## %記法
 
 
 
@@ -1099,3 +2159,4 @@ Rubyのライブラリには三種類に分類され：
 ```ruby
 
 ```
+

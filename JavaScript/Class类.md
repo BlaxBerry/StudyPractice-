@@ -1,71 +1,302 @@
-## 定义类，创建实例对象
+# Class类
+
+创建和实例对象
 
 ```js
-class Person {
-    
+class 类 {
 }
-const a = new Person()
-const a = new Person()
+
+const 实例对象01 = new 类()
+const 实例对象02 = new 类()
 ```
 
 
 
-## 实例对象传参，构造函数接受参数
+
+
+## 实例属性
+
+## 类属性
+
+
+
+## 构造函数 constructor
+
+类的构造器函数不是必须的，若不手动定义会自动生成
+
+只有对实例进行初始化操作（添加指定属性）时才需要
+
+通过new生成实例对象时会自动调用，由实例对象调用
+
+```js
+class Person {
+    constructor(){
+    }
+}
+new Person()
+```
+
+### 参数的传递与接收
+
+constructor构造函数用于接收传递来的参数
+
+并参数返回给生成的各个实例对象
+
+```js
+class Person {
+    constructor(name,age){
+      this.username = name;
+      this.age = age
+    }
+}
+var andy = new Person('andy',28);
+var tom = new Person('tom',10);
+
+console.log(andy.username,andy.age);
+// andy 28
+console.log(tom.username,tom.age);
+// tom 10
+```
+
+### this
 
 构造器函数中的 **this** 指向实例对象
 
+
+
+
+
+## 实例方法
+
 ```js
-class Person {
-  constructor(name,age){
-    this.name = name;
-    this.age = age
-  }
+class Person{
+    fn(){
+        console.log('hello');
+    }
 }
-const a = new Person('andy'，28)
-const a = new Person('tom'，18)
+var a = new Person()
+a.fn()  // hello
+```
+
+### 调用其他方法
+
+通过 **this.方法名**获取其他实例方法
+
+```js
+class Person{
+    fn(){
+        console.log('hello');
+    }
+    fn02(){
+        this.fn()
+    }
+}
+var a = new Person()
+a.fn02()  // hello
+```
+
+-  **this.方法名**：不直接执行
+-  **this.方法名( )**：直接执行函数
+
+
+
+
+
+## this
+
+### this指向
+
+- 构造函数中的 **this**：指向实例对象
+
+- 一般函数中的 **this**：指向该函数方法的调用者
+
+```js
+class Handle {
+    constructor(name) {
+      this.name = name;
+      this.btn = document.getElementById("btn");
+      this.btn.onclick = this.click;
+    }
+    click() {
+      console.log(this);  // btn HTML元素
+      console.log(this.name);   // undefined
+    }
+  	fn(){
+      console.log(this);  // 实例对象
+      console.log(this.name);   // andy
+    }
+}
+
+new Handle("andy");
+```
+
+因为一般函数中的 **this**指向该函数方法的调用者
+
+click中的this就成了调用该方法的btn
+
+因为btn上没有name属性，所以undefined未定义
+
+### bind(this)
+
+```js
+class Handle {
+    constructor(name) {
+      this.name = name;
+      this.btn = document.getElementById("btn");
+      this.btn.onclick = this.click.bind(this);
+    }
+    click() {
+      console.log(this);  // 实例对象
+      console.log(this.name);   //andy
+    }
+}
+
+new Handle("andy");
 ```
 
 
 
 
 
-## 构造器函数，一般函数
+## 继承
 
-- 构造器并不是必须要写的，
+```js
+class Father{
+}
 
-  只有对实例进行初始化操作（添加指定属性）时才需要
+class Son extends Father{
+}
+```
 
-  构造函数的调用者是创建的该类的实例对象
+子类继承父类中的所有属性和方法
 
-  所以，构造函数中的 **this**指向调用该函数方法的实例对象
+```js
+class Father{
+    say(){
+        console.log('from Father');
+    }
+}
 
-- 一般函数即方法，都被放在了类的**prototype**原型对象上，
+class Son extends Father{
+}
 
-  给类的实例对象使用，
+var son = new Son()
+son.say()  // from Father
+```
 
-  所以，一般函数中的 **this**指向该函数方法的调用者
+### 继承方法的重写
+
+子类中若有和父类同名的方法，则调用时优先使用子类的方法。但不会修改父类的方法
+
+```js
+class Father{
+    fn(){
+        console.log(11111);
+    }
+}
+
+class Son extends Father{
+    fn(){
+        console.log(22222);
+    }
+}
+
+var son = new Son()
+son.fn()  // 222222
+```
+
+### super
+
+通过super关键字，使子类可访问调用父类的方法
+
+- **调用父类普通函数**
+
+```js
+class Father{
+    say(){
+        console.log('from Father');
+    }
+}
+
+class Son extends Father{
+    fn(){
+        super.say()
+    }
+}
+
+var son = new Son()
+son.fn() // from Father
+```
+
+- **调用父类的构造函数**
+
+因为子类中的同名方法会重写覆盖父类，所以当子类中有构造函数constructor时，需要super()调用父类的构造函数，不然会因为重写导致无法继承使用父类中的方法
+
+super()调用父类的构造函数时，通过传参将子类接收的实例对象的参数传入父类
+
+ 且super() ，必须放在子类构造函数中所有内容最前面
+
+```js
+class Father {
+    constructor(name, age) {
+        this.username = name;
+        this.age = age
+    }
+    fn() {
+        console.log(this.username, this.age);
+    }
+}
+
+class Son extends Father {
+    constructor(name, age) {
+        super(name, age)
+    }
+}
+
+var son = new Son('andy',28)
+son.fn()  // andy 28
+```
+
+
+
+### 子类自己的属性
+
+若子类除了继承父类构造函数内容，还有自己特有的内容
+
+即必须先通过 **super()** 调用父类构造器，然去传递子类接受的参数给子类和父类共同的内容
 
 ```js
 class Person {
   constructor(name,age){
     this.name = name;
     this.age = age
-    console.log(this) // 实例对象example
   }
-  
   say(){
-    console.log(this) // 调用者
     console.log(this.name,this.age)
   }
 }
 
-const example = new Person('Andy',18)
-example.say() // 实例调用方法say
+class Student {
+  constructor(name,age,grade){
+    super(name,age)
+    this.grade = grade;
+  }
+}
 
-const fun = example.say
-fun() // 
-// Cannot read property 'name' of undefined
+const a = new Student('tom',18,"高一")
 ```
+
+
+
+
+
+
+
+## 
+
+
+
+
 
 类中的方法默认开启了严格模式
 
@@ -75,190 +306,13 @@ fun() //
 
 
 
-## 继承父类的构造器函数和一般方法
-
-```js
-class Person {
-  
-}
-
-class Student extends Person{
-  
-}
-```
-
-子类继承了父类后，
-
-父类的构造器函数和一般方法可以直接在子类使用
-
-```js
-class Person {
-  constructor(name,age){
-    this.name = name;
-    this.age = age
-  }
-  
-  say(){
-    console.log(this.name,this.age)
-  }
-}
-
-class Student {
-  
-}
-
-const a = new Student('tom',18)
-```
-
-
-
-## 子类自己特有的属性
-
-若子类除了父类的方法和属性还想有自己特有的
-
-即必须要写自己的构造器函数
-
-```js
-class Person {
-  constructor(name,age){
-    this.name = name;
-    this.age = age
-  }
-  say(){
-    console.log(this.name,this.age)
-  }
-}
-
-class Student {
-  constructor(name,age,grade){
-    this.name = name;
-    this.age = age;
-    this.grade = grade;
-  }
-}
-
-const a = new Student('tom',18,"高一")
-```
-
-子类在写构造函数时，除了写自己特有的，
-
-还要重复写和继承使用的父类的构造函数内容，太麻烦
-
-所以需要使用 **super()**，让子类可以直接调用父类的构造函数
-
-通过 **super()** 把子类构造函数接受的参数，传递给和父类共有的属性
-
- 若使用**super()** ，必须放在构造函数中所有内容最前面
-
-```js
-class Person {
-  constructor(name,age){
-    this.name = name;
-    this.age = age
-  }
-  say(){
-    console.log(this.name,this.age)
-  }
-}
-
-class Student {
-  constructor(name,age,grade){
-    super(name,age)
-    this.grade = grade;
-  }
-}
-
-const a = new Student('tom',18,"高一")
-```
-
-综上
-
-如果子类继承父类的构造函数、
-
-且子类除了继承父类构造函数内容还有自己特有的内容
-
-则子类的构造函数中必须使用**super()**，去传递子类接受的参数给子类和父类共同的内容
 
 
 
 
 
-## 子类重写从父类继承的方法
 
-子类中和父类同名方法时，优先使用子类自己的
-
-```js
-class Person {
-  constructor(name,age){
-    this.name = name;
-    this.age = age
-  }
-  say(){
-    console.log(this.name,this.age)
-  }
-}
-
-class Student {
-  constructor(name,age,grade){
-    super(name,age)
-    this.grade = grade;
-  }
-  say(){
-    console.log(this.name,this.age,this.grade)
-  }
-}
-
-const a = new Student('tom',18,"高一")
-a.say()
-```
-
-
-
-
-
-## 类中的方法的指向步骤
-
-先找到该实例对象的类，——>
-
-再从类的原型链上找到该方法——>
-
-如果该方法时来自继承的父类，则在到父类的原型链上找该方法——>
-
-找到后执行
-
-```js
-class Person {
-  constructor(name,age){
-    this.name = name;
-    this.age = age
-  }
-  say(){
-    console.log(this.name,this.age)
-  }
-}
-
-class Student {
-  constructor(name,age,grade){
-    super(name,age)
-    this.grade = grade;
-  }
-  say(){
-    console.log(this.name,this.age,this.grade)
-  }
-  study(){
-    this
-  }
-}
-
-const a = new Student('tom',18,"高一")
-a.say()
-```
-
-
-
-
-
-直接给类定义属性
+## 直接给类定义属性
 
 ```js
 class Person {
