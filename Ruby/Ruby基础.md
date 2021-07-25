@@ -185,18 +185,18 @@ hello tom
 
 > Rubyの世界では、すべてのデータがオブジェクト
 
-|  类型  |  含义  | 例子 |
-| :----: | :----: | :--: |
-| Number |  数值  |      |
-| String | 字符串 |      |
-| Ranges |  范围  |      |
-|  true  |   真   |      |
-| false  |   假   |      |
-|  nil   |   空   |      |
-| Array  |  数组  |      |
-|  Hash  |  哈希  |      |
-| Symbol |        |      |
-
+|    类型    |  含义  |               例子                |
+| :--------: | :----: | :-------------------------------: |
+|   Number   |  数值  |              1.0   1              |
+|   String   | 字符串 |         "hello"   'hello'         |
+|   Range    |  范围  |           1..5   1...5            |
+| TrueClass  |   真   |               true                |
+| FalseClass |   假   |               false               |
+|  NilClass  |   空   |                nil                |
+|   Array    |  数组  |              [1,2,3]              |
+|    Hash    |  哈希  | {:name="andy"}   {"name"=>"andy"} |
+|   Symbol   |        |            :name. :age            |
+|    Time    |  时间  |     2021-07-26 05:00:45 +0900     |
 
 
 ### 判断类型
@@ -273,6 +273,21 @@ x /= 5
 
 
 ### 字符串 String
+
+```ruby
+str = 'hello'
+
+p str[0]		 # 'h'
+p str.length # 5
+```
+
+---
+
+#### 字符串拼接
+
+```ruby
+p '1'+'1'  # '11'
+```
 
 Ruby好像没有隐式转换
 
@@ -409,12 +424,40 @@ puts "hello".equal?("hello")
 - メソッド引数で渡すメソッド名 __send__ :to_s
 - C の enum 的な使用 (値そのものは無視してよい場合)
 
-```ruby
 
+
+### 时间 Time
+
+```ruby
+p Time.now
+
+t = Time.new
+y = t.year
+m = t.month
+d = t.day
+
+w = t.wday
+
+min = t.min
+sec = t.sec
+
+total_sec= t.to_i	# 总毫秒（1970/1/1/0）
+
+
+p (time.now).class	# Time
+p t.class		# Time
+p y.class   # Integer
 ```
 
-```ruby
+#### 日期格式化
 
+```ruby
+time = Time.new
+ 
+p time.to_s
+# "2015-09-17 15:26:42 +0800"
+puts time.strftime("%Y-%m-%d %H:%M:%S")
+# 2015-09-17 15:26:42
 ```
 
 ```ruby
@@ -434,8 +477,6 @@ puts "hello".equal?("hello")
 ```ruby
 [1，2，3，4]
 ```
-
-
 
 ### 获取元素
 
@@ -693,17 +734,45 @@ p ('a'...'d').to_a
 
 ## 哈希 Hash
 
+Hash 就是键值队
+
+```ruby
+# 旧
+{key => value}
+
+# 新
+{key: value}
+```
+
+> 文字列のキーとシンボルのキーを混在させることができ
+
+```ruby
+hash = {
+ 	name: "andy", 
+  "age" => 28, 
+  address: "CN"
+}
+p hash
+
+# {:name=>"andy", "age"=>28, :address=>"CN"}
+```
+
+
+
+### 获取
+
+> Hashオブジェクトの要素を参照する時
+
+```ruby
+hash[:name]
+```
+
 ```ruby
 hash = {
   name: "andy", 
   age: 28, 
   address: "CN"
 }
-```
-
-> Hashオブジェクトの要素を参照する時
-
-```ruby
 hash[:name]
 ```
 
@@ -729,20 +798,7 @@ puts symbol_hash
 # {:name=>"andy", :age=28, :address=>"CN"}
 ```
 
-> 文字列のキーとシンボルのキーを混在させることができ
-
-```ruby
-hash = {
- 	name: "andy", 
-  "age" => 28, 
-  address: "CN"
-}
-p hash
-
-# {:name=>"andy", "age"=>28, :address=>"CN"}
-```
-
-**要素の追加**
+> **要素の追加**
 
 ```ruby
 ハッシュ名[キー] = 追加したい値
