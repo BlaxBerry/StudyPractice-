@@ -1,4 +1,6 @@
-Ruby基础
+# Ruby基础
+
+<img src="https://kitsune.blog/wp-content/uploads/ruby-logo.png" style="zoom:50%;" />
 
 
 
@@ -118,6 +120,17 @@ p a,b,c
 ```ruby
 a, b = b, c
 ```
+
+#### 多重代入
+
+```ruby
+a, *b = 10,20,30
+
+p a  # 10
+p b  # [20,30]
+```
+
+
 
 
 
@@ -275,10 +288,20 @@ x /= 5
 ### 字符串 String
 
 ```ruby
-str = 'hello'
+a = 'hello'
+b = "hello"
 
-p str[0]		 # 'h'
-p str.length # 5
+c = "
+    hello
+    Ruby
+"
+puts c
+=begin
+
+    hello
+    Ruby
+
+=end
 ```
 
 ---
@@ -289,13 +312,20 @@ p str.length # 5
 p '1'+'1'  # '11'
 ```
 
-Ruby好像没有隐式转换
+---
+
+#### 无隐式转换
+
+Ruby没有隐式转换 
+
+> 暗黙的に変換
 
 ```ruby
-puts "1"      # 1
-puts "1" * 3  # 111
+p "1" + 1  	# 报错
+p 1.to_s + "1"　# "11"
 
-puts 3 * "1"  # 报错
+p 3 * "1"  # 报错
+p "1" * 3  # "111"
 ```
 
 ---
@@ -333,13 +363,79 @@ puts 'Hello \n World'
 # Hello \n World
 ```
 
+---
+
+#### 多行字符串
+
+对于特别多 的多行的字符串
+
+> ヒアキュメント /  行指向文字列リテラル
+
+- **变量中：**
+
+```ruby
+<<自定义
+	xxxxx
+自定义
+```
+
+```ruby
+html = <<HTML
+    <div id="father">
+        <div id="son"></div>
+    </div>
+HTML
+
+puts html
+=begin
+    <div id="father">
+        <div id="son"></div>
+    </div>
+=end
+```
+
+- **函数中：**
+
+```ruby
+def Name
+  <<~自定义
+		xxxxx
+	自定义
+end
+```
+
+```Ruby
+def html
+    <<~HTML
+      <div id="father">
+          <div id="son"></div>
+      </div>
+    HTML
+end 
+
+puts html
+=begin
+      <div id="father">
+          <div id="son"></div>
+      </div>
+=end
+```
+
+
+
 
 
 ### nil
 
-nilオブジェクトは**何も存在しない**ことを表す
+表示空值
 
-Rubyの`false`と`nil`のみが偽
+> nilオブジェクトは**何も存在しない**ことを表す
+
+> Rubyの`false`と`nil`のみが偽
+
+```ruby
+p nil.to_s	 # ""
+```
 
 ----
 
@@ -369,8 +465,6 @@ puts fn.nil? # true
 ### symbol
 
 シンボルは任意の文字列と一対一に対応するオブジェクト
-
-文字列の代わりに用いることもでき
 
 ```ruby
 `:' 識別子
@@ -734,15 +828,49 @@ p ('a'...'d').to_a
 
 ## 哈希 Hash
 
-Hash 就是键值队
+Hash 就是键值对
+
+### 定义键值对
 
 ```ruby
 # 旧
-{key => value}
+{'key' => value}
 
-# 新
+# 新（symbol）
 {key: value}
 ```
+
+- 字符串的key键
+
+> キーに文字列を使用
+
+```ruby
+string_hash = {
+  "name" => "andy",
+  "age" => 28,
+  "address" => "CN"
+}
+
+puts string_hash
+# {"name"=>"andy", "age"=>28, "address"=>"CN"} 
+```
+
+- Symbol的key键
+
+> キーにシンボルを使用
+
+```ruby
+symbol_hash = {
+ 	name: "andy", 
+  age: 28, 
+  address: "CN"
+}
+
+puts symbol_hash
+# {:name=>"andy", :age=28, :address=>"CN"}
+```
+
+- 也可将字符串 和 Symbol 混合在一个Hash中
 
 > 文字列のキーとシンボルのキーを混在させることができ
 
@@ -752,51 +880,35 @@ hash = {
   "age" => 28, 
   address: "CN"
 }
-p hash
 
+p hash
 # {:name=>"andy", "age"=>28, :address=>"CN"}
 ```
 
 
 
-### 获取
+### 获取值
 
 > Hashオブジェクトの要素を参照する時
 
 ```ruby
-hash[:name]
+哈希['key']
+哈希[:key]
 ```
 
 ```ruby
 hash = {
   name: "andy", 
+  "nickname" => "AD"
   age: 28, 
   address: "CN"
 }
-hash[:name]
+
+p hash['nickname']	# "AD"
+p hash[:name]			# "andy"
 ```
 
-### key
 
-```ruby
-# キーに文字列を使用
-string_hash = {
-  "name" => "andy",
-  "age" => 28,
-  "address" => "CN"
-}
-# キーにシンボルを使用
-symbol_hash = {
- 	name: "andy", 
-  age: 28, 
-  address: "CN"
-}
-puts string_hash
-puts symbol_hash
-
-# {"name"=>"andy", "age"=>28, "address"=>"CN"} 
-# {:name=>"andy", :age=28, :address=>"CN"}
-```
 
 > **要素の追加**
 
@@ -804,12 +916,33 @@ puts symbol_hash
 ハッシュ名[キー] = 追加したい値
 ```
 
-```ruby
 
+
+### 展开Hash
+
+可通过在哈希前加上 ******，在一个哈希内将其他哈希的键值对展开
+
+可用于追加键值对
+
+```ruby
+{
+  **哈希
+}
 ```
 
 ```ruby
+b = {
+    address: 'CN'
+}
 
+a = {
+    name: 'andy',
+    age:28,
+    **b
+}
+
+p a 
+# {:name=>"andy", :age=>28, :address=>"CN"}
 ```
 
 
@@ -1625,9 +1758,33 @@ a = Example.new
 a.fn  # hello
 ```
 
+- **调用实例方法**
+
+```ruby
+class Example
+    def initialize()
+        say
+    end
+
+    def fn
+       say
+    end
+
+    def say
+       p "hello"
+    end
+end
+
+
+e = Example.new
+e.fn
+```
+
 ---
 
 #### 类方法
+
+> クラスメゾッド
 
 即静态方法，
 
@@ -1659,13 +1816,52 @@ p.fn  # 报错
 # undefined method `fn' for #<Example:0x00007ff36304c758> (NoMethodError)
 ```
 
+- **大量定义类方法时：**
+
+```ruby
+class 类名
+  class << self
+    def a
+    end
+    def b
+    end
+  end
+end
+```
+
+- **实例方法调用类方法：**
+
+```ruby
+ 类名.静态方法
+```
+
+```ruby
+class Example
+    def initialize()
+        Example.say
+    end
+
+    def fn
+       Example.say
+    end
+
+    def self.say
+       p "hello"
+    end
+end
+
+
+e = Example.new
+e.fn
+```
+
 ---
 
-#### 调用限制
+#### 外部调用限制
 
-呼び出し制限
+> 呼び出し制限
 
-Ruby定义了三种权限来控制类中方法的调用： 
+Ruby定义了三种权限来控制类中方法的在类外部的调用： 
 
 | 呼び出し制限  |                      含义                      |
 | :-----------: | :--------------------------------------------: |
@@ -1775,6 +1971,8 @@ p.b = 90  # 报错
 
 
 
+
+
 ### 常量
 
 #### 常量调用
@@ -1799,6 +1997,27 @@ p Example.showV 			# "0.0.1"
 
 example = Example.new
 p example.getV				# "0.0.1"
+```
+
+
+
+### self
+
+```ruby
+class Example
+    def self.fn01
+        self
+    end
+
+    def fn02
+        self
+    end
+end
+
+p Example.fn01
+
+e = Example.new		# Example
+p e.fn02		# 实例对象
 ```
 
 
@@ -2121,6 +2340,189 @@ catch(e){}
 
 
 
+
+
+## 库（library）
+
+和其他语言一样，有 库/包 的存在（イブラリ / パッケージ）
+
+ruby的库分为三类：
+
+1. **核心库**（core）
+2. **标准库**（Standard Library） 
+3.  **第三方库**（third-party）
+
+> ライブラリには三種類に分類され：
+>
+> - **組み込みライブラリ**
+> - **標準添付ライブラリ**
+> - **外部ライブラリ（gem）**
+
+- 核心库提供了ruby最基本的类和模块。
+- 标准库主要是和网络相关的库。
+- 标准库和第三方库都需要require 才可以使用
+
+```ruby
+require "date"
+p Date.today
+```
+
+
+
+### 库的导入
+
+标准库和第三方库都需要require 才可以使用
+
+```ruby
+require "date"
+p Date.today
+```
+
+---
+
+#### require
+
+- 导入 library
+- 导入自定义 .rb 文件
+
+```ruby
+require 库名
+require '文件名'
+```
+
+require是以当前目录为基准，调用导入文件/库
+
+```ruby
+reuqire './test'
+```
+
+---
+
+#### require_relative
+
+- 导入 library
+- 导入自定义 .rb 文件
+
+```ruby
+require_relative 库名
+require_relative 'test.rb'
+```
+
+require_relative是以当前文件为基准，**相对路径**
+
+```rbuy
+xxx
+|- 02
+		|- 02.rb
+|- 01
+		|- 01.rb
+```
+
+```ruby
+# 在01.rb 导入 02.rb
+
+require_relative '../02/02.rb'
+
+require '../02/02.rb' 
+# cannot load such file -- ../02/02.rb (LoadError)
+```
+
+---
+
+#### load
+
+- reuqire只会读取第一次
+
+- load会多次读取
+
+但是load导入时必须带有文件的后缀名
+
+```ruby
+load './text/rb'
+```
+
+```ruby
+
+```
+
+
+
+### 第三方库（gem）
+
+>  第三方库（サードパーティのライブラリ）
+
+第三方库主要是 **gem** 。存放于 [RubyGems.org](https://rubygems.org/) 
+
+**RubyGems** 是管理 gem 安装卸载的工具
+
+但是已经用的很少了，主要用 **bundler** 这个工具了
+
+---
+
+#### 下载
+
+```bash
+gem install rails
+```
+
+
+
+```bash
+gem install rails --version 5.0
+#或
+gem install rails -v 5.0
+```
+
+---
+
+#### 卸载
+
+```bash
+gem uninstall rails
+```
+
+```bash
+gem uninstall rails -v 5.0
+```
+
+---
+
+#### 列出下载的gem
+
+所有
+
+```
+gem list -l
+```
+
+指定搜索关键字
+
+```bash
+gem list 包含的关键字
+```
+
+```bash
+gem list rail
+
+*** LOCAL GEMS ***
+
+autoprefixer-rails (10.2.5.1)
+jquery-rails (4.4.0)
+rails (6.1.4)
+rails-dom-testing (2.0.3)
+rails-html-sanitizer (1.3.0)
+railties (6.1.4)
+sass-rails (6.0.0)
+sassc-rails (2.1.2)
+sprockets-rails (3.2.2)
+```
+
+
+
+
+
+
+
 ## 正则表达式
 
 正規表現オブジェクト
@@ -2154,65 +2556,4 @@ catch(e){}
 
 
 
-
-
-
-
-
-## gem和libary
-
-他のプログラムから読み込んで使うためのプログラムを**ライブラリ**といい
-
-Rubyのクラスもライブラリ
-
-Rubyのライブラリには三種類に分類され：
-
-- **組み込みライブラリ**
-
-  `Integer`クラス `String`クラス `Array`クラス `Hash`クラス
-
-- **標準添付ライブラリ**
-
-  使用するときに`require`などの宣言が必要
-
-  - `Date`クラス `fileutils` `csv`など
-
-  ```ruby
-  require "date"
-  p Date.today
-  ```
-
-  - 別のファイルを読み込む
-
-  ```ruby
-  
-  ```
-
-- **外部ライブラリ（gem）**
-
-  **Ruby on Rails**などもgemのひとつ
-
-```ruby
-
-```
-
-```ruby
-
-```
-
-```ruby
-
-```
-
-```ruby
-
-```
-
-```ruby
-
-```
-
-```ruby
-
-```
 
