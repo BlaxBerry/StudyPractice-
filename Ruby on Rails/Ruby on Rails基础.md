@@ -15,7 +15,6 @@ Hulu、Twitch...
 - Ruby
 - rbenv/NVM
 - rails
-- SQLite3 (Rails默认)
 - Node.js（Rails6+必要webpacker，需要nodejs环境）
 - yarn（Rails6+必要yarn）
 
@@ -976,6 +975,12 @@ xxx
 	|- routes.rb
 ```
 
+查看所有路由
+
+```bash
+rails routes
+```
+
 
 
 ### 传统方式 定义路由
@@ -1296,6 +1301,10 @@ end
 
 ### 嵌入路由
 
+比如一对多的场合
+
+某一个用户的某一个博客/多个博客
+
 ```ruby
 Rails.application.routes.draw do
   
@@ -1317,7 +1326,90 @@ end
 | PUT      | /user/:id/blogs/:id      | blogs#update   |
 | DELETE   | /user/:id/blogs/:id      | blogs#destory  |
 
+---
 
+但是嵌入式路由的**层级不能超过一层**
+
+
+
+
+
+### 路由查找机制/顺序
+
+**自上而下，找到后直接匹配，**
+
+不会被后定义的对应覆盖
+
+```ruby
+Rails.application.routes.draw do
+  
+  resource :blogs
+  
+  get "/blogs" => "blogs#asaefafqehw"
+  
+end
+```
+
+因为rails的路由匹配机制是**自上而下，找到后直接匹配，**
+
+所以最终 /blogs 地址被指派的控制器的方法
+
+是resources默认指派的 blogs#index
+
+而不是后定义的  blogs#asaefafqehw
+
+
+
+
+
+### RESTful 自定义路由
+
+```ruby
+Rails.application.routes.draw do
+  
+  resource :blogs do
+    
+    member do
+      post: :status
+    end
+    
+    sollection do
+      get: online
+    end
+    
+  end
+
+end
+```
+
+POST 	/blogs/id/status	blogs#status
+
+GET	 /blogs/online/	blogs#online
+
+
+
+
+
+### Non-Resourcesful Route
+
+```
+get ':controller(/:action(/:id))'
+
+# photos/show/1
+
+
+
+get ':controller/:action/:id/:user_id'
+
+# photos/show/1/2
+
+```
+
+match
+
+```
+match "photss", to: "photos#index", via: [:get, :post]
+```
 
 
 
@@ -1330,71 +1422,69 @@ Rail多采用放入请求路径的params形式传参
 
 当然，也可自定义query查询字符串形式传参
 
-
-
-
-
-### 
-
-### 定义多个路由
-
-```ruby
-Rails.application.routes.draw do
-	
-  resources :user, :sessions
-
-end
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### 命名路由
-
-
-
-
-
-
-
-#### 查看所有路由
-
-```bash
-rails routes
-```
-
-
-
-#### 请求方式
-
-#### 设定首页
-
-或如下：将项目的首页的根路由 **/** 设为对应控制器 **home**
-
-```ruby
-Rails.application.routes.draw do
- 
-  root "home#"
   
+
+ get '/detail/:id', to: "detail#index", as: "detail"
+
+params
+
+<%= link_to "click", controller: :detail, action: :index, id: 100 %>
+
+  <%= link_to detail_path("witcher3"), class: "text-decoration-none text-reset" do %>
+
+query
+
+<%= link_to "click", controller: :detail, action: :index, id: 2, name: "andy" %>
+
+#### 参数匹配
+
+```
+get "photos/:id", to: "photos#index", constraints: {id: /[A-Z]\d{5}/}
+```
+
+/photos/A12345
+
+
+
+
+
+### 重定向
+
+```
+get '/sssss', to: redirect('/')
+```
+
+
+
+### Mount
+
+```
+mount AdminAPP, at: '/damin'
+```
+
+
+
+### 根路由
+
+```
+root to: "home#index"
+
+root "home#index"
+```
+
+
+
+### 同一路由的控制器
+
+```ruby
+controller :welcom do
+	get "/welcome/hello"
 end
 ```
 
 
 
-
-
-
+#### 
 
 ### link_to 连接
 
@@ -1540,195 +1630,11 @@ end
 
 
 
-### 路由参数
+#### 
 
-#### query形式传参
 
-> ```ruby
-> <%= link_to "链接内容", 路由地址, 查询字符串参数: 值 %>
-> ```
->
-> ```erb
-> <%= link_to "查询", "/first", name: "andy", age: 28 %>
-> ```
->
-> 或可以写成：
->
-> ```erb
-> <%= link_to "/first", name: "andy", age: 28 do %>
->     查询
-> <% end %>
-> ```
->
-> 链接的请求URL路径为
->
-> ```js
-> /?name=andy&age=28
-> ```
->
-> 
 
 
-
-#### params形式
-
-```ruby
-```
-
-```ruby
-Rails.application.routes.draw do
-  
-  get "/user/:id", to: "home#search"
-
-end
-```
-
-```erb
-<%= link_to search_path do%>
-	<h1>查找</h1>
-<% end %>
-```
-
-
-
-
-
-
-
-### resource 定义路由
-
-#### index方法
-
-> 一覧展示画面
-
-一般用于 主页
-
-```ruby
-class BooksController < ApplicationController
-  def index
-  end
-end
-```
-
-```http
-/books
-```
-
-
-
----
-
-#### show方法
-
-> 個別詳細画面
-
-```ruby
-class BooksController < ApplicationController
-  def show
-  end
-end
-```
-
-
-
-
-
----
-
-#### new方法
-
-> 新規登録画面
-
-```ruby
-class BooksController < ApplicationController
-  def new
-  end
-end
-```
-
-```http
-/boos/new
-```
-
-
-
-
-
----
-
-#### create方法
-
-> 新規登録画面での入力処理
-
-```ruby
-class BooksController < ApplicationController
-  def create
-  end
-end
-```
-
-
-
-
-
----
-
-#### edit方法
-
-> 編集画面
-
-```ruby
-class BooksController < ApplicationController
-  def index
-  end
-end
-```
-
-```http
-/books/2/edit
-```
-
-
-
-
-
----
-
-#### update方法
-
-> 編集画面での入力処理
-
-```ruby
-class BooksController < ApplicationController
-  def update
-  end
-end
-```
-
-```http
-/books/2
-```
-
-
-
-
-
----
-
-#### destory方法
-
-> 一覧画面での削除処理
-
-```ruby
-class BooksController < ApplicationController
-  def destory
-  end
-end
-```
-
-```http
-/books/2
-```
 
 
 
@@ -1743,10 +1649,6 @@ end
 完成了 **ORM数据映射**（Object Relational Model）
 
 即，将 数据库中的数据表 映射到Ruby代码的对象中
-
-
-
-
 
 
 
@@ -1781,11 +1683,65 @@ rails new demo -d postgresql
 
 
 
+
+
+1.官网安装mysql
+
+2.安装mysql brench
+
+3.项目中安装 rails_admin 这个gem，管理
+
+​	1.Gemfile
+
+```
+gem 'rails_admin', '~> 1.2'
+```
+
+2. bundler 安装
+
+```bash
+bundle install
+```
+
+3. 
+
+如下，设置demoadmin为打开地址
+
+```bash
+rails g rails_admin:install
+
+unning via Spring preloader in process 64388
+           ?  Where do you want to mount rails_admin? Press <enter> for [admin] > demoadmin
+       route  mount RailsAdmin::Engine => '/demoadmin', as: 'rails_admin'
+      create  config/initializers/rails_admin.rb
+```
+
+重起项目后，即可在URL地址 localhost:3000/demoadmin 打开对数据库的管理
+
+因为该页面会通过URL访问到，尽量采用一些不容易被访问到的名字
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### 
+
 #### 设置 PostgreSQL
 
 1. 
 
 ```bash
+rails new demo -d postgresql
 ```
 
 2. rails scaffold

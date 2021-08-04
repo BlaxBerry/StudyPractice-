@@ -261,7 +261,13 @@ ReactDOM.render(
 
 
 
-## JSX语法
+
+
+
+
+
+
+# JSX语法
 
 JSX（JavaScript XML），即 JS + XML
 
@@ -269,11 +275,11 @@ React定义的一种类似XML的JS扩展
 
 本质是`React.createElement()`方法的语法糖
 
-定义虚拟DOM时的有以下注意点：
+定义虚拟DOM时有以下注意点：
 
-### 1、在括号内直接定义虚拟DOM
+- **在括号内直接定义**
 
-不写引号，用小括号包起
+建议用小括号包起 JSX结构
 
 ```jsx
 const VDOM = (
@@ -283,9 +289,7 @@ const VDOM = (
 )
 ```
 
-### 2、只能有一个跟标签
-
-创建的 **虚拟DOM只能有一个根标签**，
+- **虚拟DOM只能有一个根标签**
 
 不能有多个同级
 
@@ -299,9 +303,64 @@ const VDOM = (
 ReactDOM.render(VDOM, document.getElementById("root"));
 ```
 
-### 3、{ } 插入 Javascript表达式
+- **标签必须闭合**
 
-JSX语法不能直接使用JS语法，必须放入花括号 **{}**
+JSX中的虚拟DOM标签必须是闭合的，
+
+如果是创建单标签，可以选择自闭合
+
+若标签无子节点，也可自闭合
+
+```jsx
+const VDOM = (
+  <div>
+    <div></div>
+    <div></div>
+    <input/>
+    
+    <span/>
+	</div>
+); 
+ReactDOM.render(VDOM, document.getElementById("root"));
+```
+
+- **JSX标签首字母大小写**
+
+JSX并不是创建HTML标签，而是将虚拟DOM转换为HTML标签
+
+- 若JSX标签的首字母是**小写**：
+
+  - 转换为HTML标签的同名标签然后渲染页面
+
+  - 若不存在该标签则报错
+
+- 若JSX标签的首字母是**大写**：
+
+  - 则被当作React组件然后渲染页面
+
+  - 若不存在该组件则报错
+
+```react
+const VDOM = (
+  <div>
+    
+    <div></div>
+    
+    <DIVComponent></DIVDIVComponent>
+    
+  </div>
+)
+```
+
+
+
+
+
+## JSX - 嵌入
+
+JSX语法不能直接使用JS语法，必须放入花括号 **{ }**
+
+### JavaScript表达式
 
 ```jsx
 const attrFather = "fatHER"
@@ -317,9 +376,11 @@ const VDOM = (
 )
 ```
 
-JSX的花括号**{}** 只能写 **JS表达式** 不能写JS语句，
+可以嵌入JSX的 { } 的：
 
-表达式，必须有一个结果返回值
+必须 **JS表达式** ，有一个结果返回值
+
+但对象Object{} 例外，会报错，仅可用于style样式
 
 ```js
 a
@@ -329,7 +390,24 @@ function fun(){}
 a ？b : c
 ```
 
-语句代码
+JSX本身也是个JS的表达式，也可以直接放入{ }
+
+```jsx
+const h1 = (
+  <h1>I am h1</h1>
+)
+
+ReactDOM.render(
+  <div>
+    { h1 }
+  </div>,
+  document.getElementById('root')
+)
+```
+
+- 不可以嵌入JSX的 { } 的：
+
+  **JS语句**
 
 ```
 if(){}
@@ -337,135 +415,24 @@ for(){}
 switch(){case:XXX}
 ```
 
-### 4、注释
+
+
+### JSX注释
 
 因为JSX标签中混人 **JS表达式** 时必须使用花括号 **{}**
 
-所以在JSX中的注释必须也写入花括号 **{}**
+注释是JS的东西，所以必须也写入花括号 **{}**
 
 ```jsx
-const VDOM = 
-      <div>
-        {/*<div>我是注释</div>*/}
-      </div>	
+const VDOM =
+	<div>
+    {/*<div>我是注释</div>*/}
+  </div>	
 ```
 
-### 5、 外联class类名样式
 
-标签中写入 **CSS的class类名** 时，使用 **className**
 
-因为class是ES6中的类的关键字，为了避免使用关键字
-
-样式可以通过引入 css文件的方式
-
-```react
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>React 5</title>
-    
-    <!-- 1. 引入react核心库 -->
-    <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
-		<!-- 2. 引入react-dom，操作DOM -->
-    <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-    <!-- 3. 引入babel 将JSX转为JS-->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- 引入css样式文件-->
-    <link rel="stylesheet" href="./01.css" />
-  </head>
-
-  <body>
-    <!-- 创建容器 -->
-    <div id="root"></div>
-
-    <!-- 代码 type使用babel编译解析JSX -->
-    <script type="text/babel">
-      
-      const VDOM = (
-        <div id="father" className="father">
-          i am father
-          <div id="son" className="son">
-            i am son
-          </div>
-        </div>
-      );
-      ReactDOM.render(VDOM, document.getElementById("root"));
-    </script>
-  </body>
-</html>
-
-```
-
-### 6、内联style样式
-
-JSX中的内联样式使用 双花括号 **{{}}**  和  **驼峰命名**
-
-```jsx
-style = {{key: value, key: value}}
-```
-
-```react
-const VDOM = (
-    <div id="father" className="father">
-        i am father
-        <div id="son" className="son">
-            i am son
-            <div style={{
-                color: 'orangered',
-                fontSize: '20px',
-                backgroundColor: 'orange'}}>hello</div>
-        </div>
-    </div>
-    ); 
-ReactDOM.render(VDOM, document.getElementById("root"));
-```
-
-### 7、标签必须闭合
-
-JSX中的虚拟DOM标签必须是闭合的，
-
-如果是创建单标签，可以选择自闭合
-
-```jsx
-const VDOM = (
-  <div>
-    <div></div>
-    <div></div>
-    <input/>
-	</div>
-); 
-ReactDOM.render(VDOM, document.getElementById("root"));
-```
-
-### 8、标签首字母大小写
-
-JSX并不是创建HTML标签，而是将虚拟DOM转换为HTML标签
-
-- 创建的如果虚拟DOM标签名字的**首字母是小写**，
-
-  则被转换为HTML标签的同名标签，
-
-  若不存在该标签，则报错
-
-- 如果虚拟DOM标签名字的**首字母是大写**，
-
-  则被当作React组件，
-
-  若不存在该组件，则报错
-
-```react
-const VDOM = (
-  <div>
-    <div></div>
-    <DIV></DIV>
-  </div>
-)
-```
-
-### 9、动态遍历创建虚拟DOM
+### 动态遍历数组
 
 JSX创建虚拟DOM时，如果插入的JS表达式是个数组
 
@@ -474,57 +441,247 @@ React会自动把所有元素遍历出
 ```react
 const data = ["Reacr", "Vue", "angular"]; 
 
-const VDOM = (
-<div>
-    <h1>{data}</h1>
-</div>
-); 
-
-ReactDOM.render(VDOM, document.getElementById("root"));
+ReactDOM.render(
+  <div> {data} </div>,
+document.getElementById('root')
 ```
+
+```html
+<div>
+  "Reacr""Vue""angular"
+</div>
+```
+
+
+
+
+
+
+
+
+
+
+
+## JSX - 条件渲染
+
+根据特定条件判断是否渲染出指定的JSX结构，
+
+比如，加载loading图标的现实与否
+
+可使用：
+
+- if...else
+
+- 三元运算符
+- 逻辑与运算符
+
+如下：if...else：
+
+```jsx
+const loadingFun = (isLoading)=>{
+  if(isLoading){
+    return <img src="/loading.gif" alt="loading"/>
+  }
+  return <div>加载完成</div>
+}
+
+
+ReactDOM.render(
+  <div>
+    	
+    	{loadingFun(true)}   {/* 加载中 */}
+    
+      {loadingFun(false)}   {/* 加载完成 */}
+    
+  </div>,
+  document.getElementById('root')
+)
+```
+
+如下：三元运算符：
+
+```jsx
+const loadingFun = (isLoading)=>{
+  return ( 
+    isLoading ? <img src="/loading.gif"/> : <div>加载完成</div> ;
+)}
+
+
+ReactDOM.render(
+  <div>
+    	
+    	{loadingFun(true)}   {/* 加载中 */}
+    
+      {loadingFun(false)}   {/* 加载完成 */}
+    
+  </div>,
+  document.getElementById('root')
+)
+```
+
+如下：逻辑与运算符
+
+但不能像上面那两个可以选择渲染哪一个JSX，
+
+逻辑与运算符只能实现渲染JSX结构或不渲染
+
+```jsx
+const loadingFun = (isLoading)=>{
+  return isLoading && <img src="/loading.gif"/>
+}
+
+
+ReactDOM.render(
+  <div>
+    	
+    	{loadingFun(true)}   {/* 加载中 */}
+    
+      {loadingFun(false)}   {/* 加载完成 */}
+    
+  </div>,
+  document.getElementById('root')
+)
+```
+
+#### 实例：
+
+```react
+export default class List extends Component {
+
+    state = {
+        list: [
+            { id: 1, name: 'adny', contnet: 'hello,iam andy' },
+            { id: 2, name: 'tom', contnet: 'hello,iam tom' },
+            { id: 3, name: 'lili', contnet: 'hello,iam lili' }
+        ]
+    }
+
+    renderList = () => {
+        return (
+            this.state.list.length === 0
+                ? ( <h3>没有评论...</h3> )
+                : (
+                    <ul>
+                        {
+                            this.state.list.map(item => (
+                                <li key={item.id}>
+                                    <h3>{item.name}</h3>
+                                    <p>{item.contnet}</p>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                )
+        )
+    }
+
+    render() {
+        return (
+            <div>
+                { this.renderList() }
+            </div>
+        )
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+## JSX - 列表渲染
+
+渲染一组数据到页面（循环遍历）
+
+需要通过数组的 **map()**
+
+```jsx
+const list = [
+  { name: 'andy', age: 28 },
+  { name: 'lili', age: 14 },
+  { name: 'tom', age: 20 }
+]
+
+
+ReactDOM.render(
+  <div>
+    <ul>
+      { 
+        list.map( item => (
+        	<li>{item.name} - {item.age}</li>
+      	))
+      }
+    </ul>
+  </div>,
+  document.getElementById('root')
+)
+```
+
+但是会报错，提示需要一个key属性来表示每一个子元素的唯一
+
+```js
+// Warning: Each child in a list should have a unique "key" prop.
+```
+
+React的Diffing算法靠这个**唯一的key属性**比较虚拟DOM
+
+Vue中的v-for就是借鉴这一点
+
+```jsx
+const list = [
+  { name: 'andy', age: 28 },
+  { name: 'lili', age: 14 },
+  { name: 'tom', age: 20 }
+]
+
+
+ReactDOM.render(
+  <div>
+    <ul>
+      {
+        list.map((item, index) => (
+          <li key={index}>{item.name} - {item.age}</li>
+      	))
+      }
+    </ul>
+  </div>,
+  document.getElementById('root')
+)
+```
+
+
+
+### 为何使用map( )
+
+JSX中{} 放入一个数组的话会自动遍历元素
+
+map有一个return返回值返回一个新数组
 
 可以利用这一特性**遍历**生成元素
 
-并且，遍历的元素需要指定**唯一的key属性**，
-
-Diffing算法需要靠这个唯一的属性比较虚拟DOM
+可理解为简化版的 forEach() 拼接字符串（但是正经人不会用这个）
 
 ```react
 const data = ["Reacr", "Vue", "angular"]; 
 
-const VDOM = (
+ReactDOM.render(
+  <div> {data} </div>,
+document.getElementById('root')
+```
+
+```html
 <div>
-    <h1>JS前端框架列表</h1>
-    <ul>
-        {
-            data.map((item,index)=>{
-                return <li key={index}>{item}</li>
-            })
-        }
-    </ul>
+  "Reacr""Vue""angular"
 </div>
-); 
-
-ReactDOM.render(VDOM, document.getElementById("root"));
 ```
 
-```react
-<ul id="list"></ul>
 
-<script>
-let person = [
-  {id:'001',name:'Andy',age:18},
-  {id:'002',name:'Tom',age:10}
-]
 
-let str = ''
-person.foeEach(item=>{
-  str += `<li>${item.id}--${item.name}</li>`
-})
-  
-document.getElementById('list').innerHTML = str
-</script>
-```
+
 
 
 
@@ -542,9 +699,11 @@ different
 
 ---
 
-### :key的作用
+### key的作用
 
-React遍历时的:key是虚拟DOM的标识
+React遍历时的key是虚拟DOM的标识
+
+只在Rae餐厅内部使用，不会显示在渲染后的页面中
 
 state状态中的数据变化时，React会根据 新的数据生成新的虚拟DOM
 
@@ -578,3 +737,70 @@ key必须要是唯一标识，比如id，最好不要用index
 若仅是简单展示数据，不存在数据顺序操作
 
 index也会可以作为key属性的
+
+
+
+
+
+## JSX - 样式处理
+
+### 行内样式 style
+
+不常用
+
+```jsx
+<div style={ 样式 }></div>
+```
+
+采用对象键值对形式添加样式
+
+```jsx
+<div style = {{
+    key: value, 
+    key: value
+}}></div>
+```
+
+并需要驼峰命名法
+
+```react
+ReactDOM.render(
+	<div style={{
+      color: 'orangered',
+      fontSize: '20px',
+      backgroundColor: 'orange'}}>
+    hello
+  </div>,
+  document.getElementById('root')
+)
+```
+
+
+
+### 外联类名 className
+
+更推荐使用className给JSX添加样式
+
+标签中写入 CSS的class类名时使用 **className**
+
+因为class是ES6中的类的关键字，为了避免使用关键字
+
+样式可以通过引入 css文件的方式
+
+```jsx
+<div className=类名}></div>
+```
+
+并需要驼峰命名法
+
+```react
+import "./style/01.css";
+
+ReactDOM.render(
+  <div>
+    <h1 className="red-text text-center">Hello</h1>
+  </div>,
+  document.getElementById('root')
+)
+```
+
