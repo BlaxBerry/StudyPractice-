@@ -1,7 +1,13 @@
 ## 组件创建
 
-- 函数创建（函数组件）
-- 类创建（类组件）
+有两种常见组件的方式：
+
+- 函数创建（**函数组件**）
+- 类创建（**类组件**）
+
+> 类组件的创建的组件相当于创建JS的类，
+>
+> 详见 [ JavaScript Class类]()
 
 
 
@@ -55,9 +61,15 @@ ReactDOM.render(
 
 - 类组件名的**首字母大写**
 
-- 必须要**继承 React.Component父类**，从而使用其提供的方法和属性
+- 必须要**继承 React.Component父类**，
+
+  从而使用其提供的方法和属性（props，state，ref，context）
+
+- constructor构造器函数不是必须
+
 - 组件中必须要有 **render( ) 方法**
-- render( ) 方法必须要有**return返回值**，返回 JSX结构
+
+  render( ) 方法必须要有**return返回值**，返回 JSX结构
 
 同函数组件一样，若不想返回JSX结构就返回一个null（正经人不会这么做）
 
@@ -73,7 +85,9 @@ class Hello extends React.Component {
 }
 ```
 
-使用组件时，组件名作为标签名
+类实例的创建被React内部执行
+
+使用组件时，类组件名作为标签名调用即可
 
 组件名必须大写，不然组件调用时会被当作HTML一般标签渲染（当然会报错）
 
@@ -132,6 +146,64 @@ ReactDOM.render(
   document.getElementById('root')
 )
 ```
+
+
+
+
+
+## 子组件
+
+> 创建的组件相当于JS的类，组件内调用其他组件作为子组件的行为就是 JS的 创建类的实例对象，详见 [ JavaScript Class类]()
+
+子组件以标签形式被调用子组件标签闭合
+
+### children属性
+
+只有当组件内有子组件时，
+
+该组件的props属性才会有childern属性
+
+否则props.children是个空对象 { }
+
+关于props属性 详见 [props]()
+
+```react
+class App extends React.Component {
+  render() {
+    console.log(this.props);	// {}
+    return (
+      <div></div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <App></App>,
+  document.getElementById('root')
+)
+```
+
+有children属性
+
+```react
+class App extends React.Component {
+  render() {
+    console.log(this.props);	
+    return (
+      <div></div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <App>
+    <div>Hello</div>
+  </App>,
+  document.getElementById('root')
+)
+```
+
+
 
 
 
@@ -308,7 +380,7 @@ export default class Hello extends Component {
 
 但虚拟DOM直接调用类中方法函数时，
 
-类方法中 this指向 **undefined**，并不是指向类自己本身，如下：
+类方法中 this指向 **undefined**（babel严格模式导致不指向window），并不是指向类自己本身，如下：
 
 ```react
 import React, { Component } from 'react'
@@ -521,6 +593,8 @@ export default class Hello extends Component {
 
 是组件自身的数据，只能在该组件内部自己使用
 
+Raect是数据驱动页面的渲染，即由state/props驱动
+
 一个组件可有多个数据，state的 **值是对象**
 
 
@@ -686,6 +760,89 @@ export default class Hello extends Component {
         )
     }
 }
+```
+
+---
+
+#### 异步回调
+
+**setState状态更新是异步**的
+
+若想this.setState修改后立刻获取状态，获取的还是旧状态，
+
+无法获取最新状态是因为，直接获取式同步任务，修改是个异步任务
+
+如下，发现并没有改变，但是实际上页面中的数据已经被修改并渲染
+
+```js
+state= { num: 0 }
+change=()=>{
+  
+  this.setState({num:100});
+  console.log(this.state.num)  // 0
+} 
+
+```
+
+所以想要立刻获取修改后数据，可通过一个回调函数
+
+该回调函数在状态更新完毕切页面渲染完毕后才会被调用
+
+```react
+this.setState({state中数据: 修改后的值}, [callback] )
+```
+
+```js
+state= { num: 0 }
+change=()=>{
+  
+  this.setState({num:100}, ()=>{
+			console.log(this.state.num)  // 100
+	})
+  
+  console.log(this.state.num) // 0
+                
+});
+```
+
+---
+
+#### 函数式setState 对象式setState
+
+修改状态state的setState除了传入一个对象，还可以函数的形式修改状态。函数式的优点在于函数的参数就是该组件的state和props
+
+```js
+change=()=>{
+  this.setState((state, [props]) => {
+    return { 数据: state.数据 + 1 }
+  })
+});
+```
+
+对象形式的setState是函数式的语法糖
+
+在更新后的新状态不依赖原状态时，写起来更简便
+
+但更新后的新状态依赖原状态时，需要重新this获取原状态
+
+```js
+this.setState({ 
+  num: this.state.num + 1,
+  age: 1000000
+})
+```
+
+函数型式的setState因为函数参数就是state
+
+更新后的新状态依赖原状态时，直接获取即可
+
+并且接受的数据props同样也是一个可选参数
+
+```js
+ this.setState((state, props) => ({
+   num: state.num + 1,
+   age: props.age
+}))
 ```
 
 
@@ -992,157 +1149,6 @@ export default class Hello extends Component {
 
 
 
-## 组件通信
-
-组件之间共有 3种 通讯方式：
-
-- 父组件——>子组件
-- 子组件——>父组件
-- 兄弟组件——>兄弟组件
-
----
-
-### 父 —> 子
-
-1. 父组件的状态state中的数据
-
-2. 将数据以标签属性方式传入父组件内的子组件
-
-3. 子组件内通过 **props属性** 获取对象形式的数据
-
-[详见props]()
-
----
-
-### 子 —> 父
-
-通过**回调函数**的形式，只要子组件调用就会传递
-
-1. 父组件内定义一个函数
-
-2. 父组件将该函数传入子组件，仅传入不调用
-
-3. 子组件内通过 this.props 调用父组件传递进来的该函数
-
-   **常常通过事件触发该回调函数**
-
-4. 子组件内将自身状态state中的数据以参数形式传入该函数
-
-5. 父组件传入的函数内接受参数来获取子组件传入的数据，
-
-   再通过 this.setState 将数据存入父组件的状态中，
-
-   完成传递
-
-如下：
-
-子组件通过onClick事件触发父组件传入的getData函数，
-
-并将数据自身状态state的name作为参数传入该函数
-
-父组件内接收到并通过setState存入自身的状态，完成子传父
-
-```react
-class Son extends React.Component {
-  state = {
-    name: 'andy'
-  }
-
-  send = () => {
-    this.props.getData(this.state.name)
-  }
-  
-  render() {
-    return (
-      <div>
-        <button onClick={this.send}>发送</button>
-      </div>
-    )
-  }
-}
-
-
-class Father extends React.Component {
-	state = {
-    name: ''
-  }
-
-  getData = (data) => {
-   	// console.log("show data in Father",data);
-    this.setState({
-      name: data
-    })
-  }
-  
-  render() {
-    return (
-      <div>	
-        <Son getData={this.getData} />
-      
-        <p>来自子组件的数据：{this.state.name}</p>
-      </div>
-    )
-  }
-}
-```
-
----
-
-### 兄弟 —> 兄弟
-
-React中通过**状态提升**
-
-1. 将兄弟组件的共享的状态传递到最近的公共父组件中，
-
-2. 公共父组件管理这个共享状态，并提供操作该状态的方法
-
-3. 子组件通过props接受状态和操作方法
-
-```react
-class Father extends React.Component {
-  state = {
-    num: 100
-  }
-  add = () => {
-    this.setState({
-      num: this.state.num + 1
-    })
-  }
-  render() {
-    return (
-      <div>
-        <Child01 add={this.add} />
-        <Child02 num={this.state.num} />
-      </div>
-    )
-  }
-}
-
-
-const Child01 = (props) => {
-  return (
-    <button onClick={props.add}> +1 </button>
-  )
-
-}
-
-const Child02 = (props) => {
-  return (
-    <h3>计算结果：{props.num}</h3>
-  )
-}
-```
-
-
-
-
-
-
-
-
-
-
-
 ## props
 
 用于接受**父组件传递来**的数据
@@ -1282,6 +1288,230 @@ ReactDOM.render(
 
 
 
+### props 默认值
+
+给组件设定没有数据传入时，依然能获取的默认值
+
+比如分页组件，默认的每页显示条数
+
+```react
+组件名.defaultProps = {
+  属性: 值
+}
+```
+
+如下：
+
+即使没有给Demo组件传入数值，依然能获取数据
+
+```react
+class Demo extends React.Component {
+  render() {
+    return (
+      <div>
+        {this.props.name}
+        {this.props.age}
+      </div>
+    )
+  }
+}
+Demo.defaultProps = {
+  name: 'andy',
+  age: '28'
+}
+
+ReactDOM.render(
+  <div>
+    	<Demo />
+  </div>,
+  document.getElementById('root')
+)
+```
+
+注意，**默认值只在没有数据传入组件时才生效**
+
+若有数据传入了组件，则有先一传入的数据为准
+
+如下：
+
+设置的默认值是 andy 28,但传入的是 tommy 16	
+
+优先以传入的为准，最后渲染到页面的是tommy 16	
+
+```react
+class Demo extends React.Component {
+  render() {
+    return (
+      <div>
+        {this.props.name}
+        {this.props.age}
+      </div>
+    )
+  }
+}
+Demo.defaultProps = {
+  name: 'andy',
+  age: '28'
+}
+
+ReactDOM.render(
+  <div>
+    	<Demo 
+        name="tommy" 
+        age={16}
+      />
+  </div>,
+  document.getElementById('root')
+)
+```
+
+
+
+
+
+### props 数据校验
+
+对于当前组件来讲，无法保证外部会传入一个什么格式类型样的数据
+
+**如果传入组件的数据的类型不符合组件的处理要求，就会报错**
+
+如下：子组件需要对接收的数据进行遍历渲染，
+
+原本需要数据类型是个数组，但是传入了一个数值，于是报错
+
+```react
+class Demo extends React.Component {
+  render() {
+    return (
+      <ul>
+        {
+          this.props.list.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))
+        }
+      </ul>
+    )
+  }
+}
+
+ReactDOM.render(
+  <div>
+    <Demo list={ 999 } />
+  </div>,
+  document.getElementById('root')
+)
+```
+
+但，当前组件只会报错告知无法进行处理
+
+而无法获知错误的具体原因
+
+```js
+// this.props.list.map is not a function
+```
+
+所以，需要进行props传入数据的校验
+
+来得知在传入的数据格式不符合当前组件内的处理逻辑的需求时，
+
+到底是哪里出了错误
+
+---
+
+#### prop-types（建议必做）
+
+[详见官方文档的 Typechecking with Prop-Types]()
+
+通过第三方包**prop-types** 对props传入数据的进行校验，
+
+传入的数据格式不符合当前组件内的处理逻辑的需求时，
+
+会提示哪一个数据那种格式出错，方便修改
+
+1. 安装
+
+```bash
+yarn add prop-types
+# 或
+npm install prop-types
+```
+
+2. 导入
+
+```js
+import PropTypes from "prop-types"
+```
+
+3. 添加校验规则
+
+   给指定组件的指定数据们添加校验规则
+
+```react
+组件名.propTypes = {
+  数据名: PropTypes.数据类型
+}
+
+// 常见类型：
+array
+bool
+func
+number
+object
+string
+
+// 规定数据必选
+组件名.propTypes = {
+  数据名: PropTypes.数据类型.isRequired
+}
+
+// 规定一个数据的结构
+组件名.propTypes = {
+  数据名: PropTypes.shape({
+    属性: PropTypes.数据类型
+  })
+}
+```
+
+4. 传入数据到组件时，该组件的根据规则自动校验
+
+   若数据格式会报错，会报错并详细说明哪个数据哪个格式出错
+
+   如下：
+
+```react
+import PropTypes from "prop-types"
+
+class Demo extends React.Component {
+  render() {
+    return (
+      <ul>
+        {
+          this.props.list.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))
+        }
+      </ul>
+    )
+  }
+}
+Demo.propTypes = {
+  list: PropTypes.array
+}
+
+ReactDOM.render(
+  <div>
+    <Demo list={999} />
+  </div>,
+  document.getElementById('root')
+)
+```
+
+提示传入组件的 list 数据本应该是个数值，但传入的是个数值类型
+
+```js
+//  Warning: Failed prop type: Invalid prop `list` of type `number` supplied to `Demo`, expected `array`.
+```
+
 
 
 
@@ -1290,19 +1520,420 @@ ReactDOM.render(
 
 ## context
 
-context用于**跨组建传递数据**
+context也是组件实例上的一个属性，
 
-虽然父子组件通讯时使用props，
+类组件中可通过this.context获取，默认是个空对象 { }
 
-但若嵌套层级特别深，props逐层传递会太过繁琐（正经人不这么用）
+类似 props的跨组件数据传递，但context用于**深层组件**之间的数据传递
 
-此时使用context实现跨组件传递数据
+不仅是最近一级父子组件尤其是**父组件与后代组**的深层树型嵌套
 
-1. 调用React.createContext()
+不然props逐层传递会太过繁琐（正经人不这么用）
 
-   创建 Provider和Consumer组件，分别用于提供数据和使用数据
+### 类组件中使用
 
-2. 使用Provider组件作为父节点
+1. 创建 **Context 容器**
+
+   在父组件和子组件所在的**公共区域**创建
+
+   ```js
+   const XxxContext = React.createContext()
+   ```
+
+2. 通过 Context 容器对象上的 **Provider** 包裹后代组件，
+
+   并通过 **value** 传递数据
+
+   ```react
+   <XxxContext.Provider value={ 数据 }>
+   		<后代组件/>
+   </XxxContext.Provider>
+   ```
+
+3. **声明接收context**
+
+   谁声明谁使用需要使用数据的后代组件中，
+
+   通过**contextType**接收公共区域内定义的 context容器
+
+   之后就可以在该声明接收的子组件内通过this.context获取数据了
+
+   若不声明接收，this.context默认是个 { }
+
+   ```jsx
+   class 子组件 extends React.Component{
+     static contextType = xxxContext
+   	
+   	render(){
+       console.log(this.context)
+       return(
+         <div></div>
+       )
+     }
+   }
+   ```
+
+---
+
+如下：传递一个对象
+
+```jsx
+const MyContext = React.createContext()
+
+class Demo extends React.Component {
+  state = {
+    num: 100,
+    age: 'andy'
+  }
+  render() {
+    return (
+      <MyContext.Provider
+        value={{
+          num: this.state.num,
+          age: this.state.age
+        }}>
+        <Child1 />
+      </myContext.Provider >
+    )
+  }
+}
+
+class Child1 extends React.Component {
+  render() {
+    console.log(this.context); 	//{}
+    return (
+      <Child2 />
+    )
+  }
+}
+
+class Child2 extends React.Component {
+  static contextType = MyContext
+  render() {
+    console.log(this.context); 	//{num: 100, age: 'andy'}
+    return (
+      <div>
+        {this.context.num}
+        {this.context.age}
+      </div>
+    )
+  }
+} 
+```
+
+
+
+### 函数组件中使用
+
+若想接受数据的后代组件是个**函数组件**时，
+
+函数组件无无法像类组件一样，直接获取this.context，也无法通过 contextType 声明接收数据。
+
+此时需要通过Context容器上的 Consumer
+
+1. 公共区域内创建Context容器 ，并获取 **Provider** 和 **Consumer**
+
+   ```js
+   const XxxContext = React.createContext()
+   ```
+
+2. 通过 Context容器上的 **Provider** 包裹后代组件，
+
+   并通过 **value** 传递数据
+
+   ```react
+   <XxxContext.Provider value={ 数据 }>
+   		<后代组件/>
+   </XxxContext.Provider>
+   ```
+
+3. 函数子组件内通过 Context容器上的 **Consumer** 获取数据
+
+   调用一个**回调函数**
+
+   函数的参数就是Provider组件的value值，即传递的数据
+
+   ```jsx
+   return (
+   	<XxxContext.Consumer>
+   		{
+         value => {
+           return (
+             <div>{ value.数据 }</div>
+           )
+         }
+       }
+   	</XxxContext.Consumer>
+   )
+   ```
+
+---
+
+如下：
+
+```react
+const { Provider, Consumer } = React.createContext()
+
+class Father extends React.Component {
+	state = {
+    num: 100,
+    age: 'andy'
+  }
+
+  render() {
+    return (
+      <MyContext.Provider
+        value={{
+          num: this.state.num,
+          age: this.state.age
+        }}>
+        <Child1 />
+      </myContext.Provider >
+    )
+  }
+}
+
+const Child1 = props => {
+  return (
+    <div>
+      <Child22 />
+    </div>
+  )
+}
+
+const Child2 = props => {
+  return (
+    <div>
+      <Consumer>
+        { data => ( 
+          	<div>{data.num}</div> 
+          	<div>{data.age}</div> 
+        ) }
+      </Consumer>
+    </div>
+  )
+}
+```
+
+---
+
+但实际上开发中不怎么用context属性
+
+主要是使用，比如 **react-redux**
+
+
+
+
+
+
+
+
+
+## 组件通信
+
+> 组件之间的关系共两种：
+>
+> - 嵌套组件（父子组件）
+>   - 亲父子
+>   - 祖孙（跨级组件）
+> - 非嵌套组件（兄弟组件）
+>
+> ---
+>
+> 组件之间通讯理念目前是4种：
+>
+> - **props**
+>   - childern.props （详见 [props]()）
+>   - render.props（详见 [render props]()）
+>
+> - **消息订阅-发布**
+>   - pub-sub.js
+>
+> - **集中管理**
+>   - Redux（详见 [Redux]()）
+> - **context**
+>   - Provider — Consumer （详见 [context]()）
+
+---
+
+结合组件关系，组件之间通讯方式可使用：
+
+- 亲父子组件之间：
+
+  - props
+  - 事件 + 回调函数
+
+- 祖孙组件之间：
+
+  - 消息订阅-发布
+
+  - 集中管理（Redux）
+  - context（用的少，多用其封装的插件）
+
+- 兄弟组件之间：
+
+  - 消息订阅-发布
+
+  - 集中管理（Redux）
+
+
+
+### 父子组件之间
+
+#### 父 —> 子
+
+- props
+
+  [详见props]()
+
+  1. 父组件的状态state中的数据
+  2. 将数据以标签属性方式传入父组件内的子组件
+  3. 子组件内通过 **props属性** 获取对象形式的数据
+
+- context
+
+  [详见context]()
+
+  若组件层级特别深，可使用**context**
+
+---
+
+#### 子 —> 父
+
+通过**回调函数**的形式，只要子组件调用就会传递
+
+1. 父组件内定义一个函数
+
+2. 父组件将该函数传入子组件，仅传入不调用
+
+3. 子组件内通过 this.props 调用父组件传递进来的该函数
+
+   **常常通过事件触发该回调函数**
+
+4. 子组件内将自身状态state中的数据以参数形式传入该函数
+
+5. 父组件传入的函数内接受参数来获取子组件传入的数据，
+
+   再通过 this.setState 将数据存入父组件的状态中，
+
+   完成传递
+
+如下：
+
+子组件通过onClick事件触发父组件传入的getData函数，
+
+并将数据自身状态state的name作为参数传入该函数
+
+父组件内接收到并通过setState存入自身的状态，完成子传父
+
+```react
+class Son extends React.Component {
+  state = {
+    name: 'andy'
+  }
+
+  send = () => {
+    this.props.getData(this.state.name)
+  }
+  
+  render() {
+    return (
+      <div>
+        <button onClick={this.send}>发送</button>
+      </div>
+    )
+  }
+}
+
+
+class Father extends React.Component {
+	state = {
+    name: ''
+  }
+
+  getData = (data) => {
+   	// console.log("show data in Father",data);
+    this.setState({
+      name: data
+    })
+  }
+  
+  render() {
+    return (
+      <div>	
+        <Son getData={this.getData} />
+      
+        <p>来自子组件的数据：{this.state.name}</p>
+      </div>
+    )
+  }
+}
+```
+
+
+
+### 兄弟组件之间
+
+#### 状态提升
+
+实际上还是通过props，借助公共父组件
+
+1. 将兄弟组件的共享的状态传递到最近的公共父组件中，
+
+2. 公共父组件管理这个共享状态，并提供操作该状态的方法
+
+3. 子组件通过props接受状态和操作方法
+
+```react
+class Father extends React.Component {
+  state = {
+    num: 100
+  }
+  add = () => {
+    this.setState({
+      num: this.state.num + 1
+    })
+  }
+  render() {
+    return (
+      <div>
+        <Child01 add={this.add} />
+        <Child02 num={this.state.num} />
+      </div>
+    )
+  }
+}
+
+
+const Child01 = (props) => {
+  return (
+    <button onClick={props.add}> +1 </button>
+  )
+
+}
+
+const Child02 = (props) => {
+  return (
+    <h3>计算结果：{props.num}</h3>
+  )
+}
+```
+
+---
+
+#### 消息订阅-发布
+
+是一种理念，用
+
+---
+
+#### 集中管理
+
+Redux
+
+
+
+
 
 
 
@@ -1314,10 +1945,232 @@ context用于**跨组建传递数据**
 
 ## 生命周期
 
+**只有类组件才有生命周期**
+
+组件生命周期是指：组件从被创建到被挂载到页面再到被卸载的流程
+
+可以更好了解组件的运行方式，也可以更好的分析错误原因
+
+### 流程
+
+- 创建时（挂载阶段）
+
+  - 组件被创造（页面加载时）
+
+- 更新时
+
+  - 初始化时
+
+  - 每次使用setState更新组件状态时
+  - 强制更新时
+
+- 卸载时
+
+  - 组件从页面中消失时
+
+
+
+### 钩子函数
+
+每个生命周期都是有特定的方法调用完成特定的任务
+
+这些不同阶段调用的方法函数，就是钩子函数
+
+方便了在不同阶段进行特定的处理
+
+(和手动定义的前后位置无关，React默认的执行顺序)
+
+#### 创建时
+
+1. **constructor()** ——>
+2. **render()** ——>
+3. **componentDidMount()**
+
+```react
+class Demo extends React.Component {
+  constructor(){
+    super()
+    console.log("constructor");
+  }
+
+  render() {
+    console.log('render');
+    return (
+      <div></div>
+    )
+  }
+
+  componentDidMount(){
+    console.log('componentDieMount');
+  }
+}
+```
+
+```js
+/*
+	constructor
+  render
+	componentDieMount
+*/
+```
+
+- **constructor构造器函数**：
+
+  初始化创建组件时被自动调用
+
+  - 用于初始化组件状态state
+  - 为组件内事件绑定this的指向 [详见this指向]()
+
+- **render：**
+
+  每次组件渲染时都会自动触发
+
+  - 仅用来渲染页面UI
+
+- **componentDidMount**
+
+  组件挂载完毕时（DMO渲染结束时）自动调用
+
+  - 用于发送Ajax请求
+  - 进行DOM操作，仅在此时可获取页面DMO元素
 
 
 
 
-render-props
 
-高阶组件
+#### 更新时
+
+1. **render** ——>
+2. **componentDidMount**
+3. **render** \* N
+
+```react
+class Demo extends React.Component {
+
+  state = { num: 0 }
+  update = () => {
+    this.setState({
+      num: this.state.num + 1
+    })
+  }
+
+  render() {
+    console.log('render');
+    return (
+      <button onClick={this.update}>更新</button>
+    )
+  }
+
+  componentDidMount() {
+    console.log('componentDieMount');
+  }
+}
+```
+
+```js
+/*
+	render
+	componentDieMount
+	render （只要触发更新状态就调用）
+*/
+```
+
+- **render：**
+
+  出了组件刚创建时，只要数据更新也会调用
+
+  每次组件渲染时都会自动触发
+
+- **componentDidMount**
+
+  组件挂载完毕时（DMO渲染结束时）自动调用
+
+  - 用于发送Ajax请求
+
+  - 进行DOM操作，仅在此时可获取页面DMO元素
+
+    
+
+#### 卸载时
+
+**componentWillUnmount**
+
+- 执行清理工作，比如清理定时器
+
+
+
+
+
+
+
+
+
+
+
+两个组件的相似功能
+
+将两个组件的共同内容抽离到一个公共函数
+
+## render-props
+
+1. 抽离公共状态
+2. 抽离公共UI
+
+```react
+<组件
+  	render={ (公共状态) => (
+  		使用了公共状态的公共JSX结构
+  	)}
+/>
+```
+
+
+
+
+
+
+
+
+
+## 高阶组件
+
+https://www.bilibili.com/video/BV1gh411U7JD?p=70&spm_id_from=pageDriver
+
+HOC
+
+
+
+
+
+
+
+
+
+##  Fragment
+
+因为 JSX 语法的要求，render返回值的 JSX结构 都必须包裹在一个容器之中，但这样以来会导致页面渲染出过多没有任何意义的标签，导致层级过深。所以，可以导入**Fragment（碎片）**代替包裹的容器，页面渲染解析时，会丢掉这个 Fragment，减少过多没意义的层级
+
+( Fragment在遍历时也可加上唯一标识 key属性 )
+
+```react
+import React, { Fragment } from 'react';
+
+class Demo extends Component {
+    render() {
+        return (
+            <Fragment >
+               <div>Hello</div>
+            </Fragment >
+        )
+    }
+}
+
+function Demo2(){
+  return (
+    	<Fragment >
+      		<div>Hello</div>
+       </Fragment >
+  )
+}
+```
+

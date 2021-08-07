@@ -107,34 +107,56 @@ a.fn02()  // hello
 ### this指向
 
 - 构造函数中的 **this**：指向实例对象
-
 - 一般函数中的 **this**：指向该函数方法的调用者
 
-```js
-class Handle {
+```html
+<button id="btn" name="button">click</button>
+
+<script>
+  class Handle {
     constructor(name) {
+      console.log(this); // 实例对象
+      
       this.name = name;
       this.btn = document.getElementById("btn");
-      this.btn.onclick = this.click;
+      
+      this.btn.onclick = this.normalFn; 
+      this.btn.onclick = this.arrowFn;
     }
-    click() {
-      console.log(this);  // btn HTML元素
-      console.log(this.name);   // undefined
+    
+    normalFn() {
+      console.log(this); // HTML元素btn
+      console.log(this.name); // btn的name属性，button
     }
-  	fn(){
-      console.log(this);  // 实例对象
-      console.log(this.name);   // andy
-    }
-}
 
-new Handle("andy");
+    arrowFn = () => {
+      console.log(this); // 实例对象
+    };
+  
+  
+    call_01() {
+      console.log(this); // 实例对象
+      console.log(this.name); // andy
+    }
+  	call_02 = ( )=> {
+      console.log(this); // 实例对象
+      console.log(this.name); // andy
+    }
+  }
+
+  new Handle("andy");
+</script>
 ```
 
 因为一般函数中的 **this**指向该函数方法的调用者
 
-click中的this就成了调用该方法的btn
+涉及到类中调用类中方法时，
 
-因为btn上没有name属性，所以undefined未定义
+可通过bind(this)强制指定调用该方法的调用者
+
+或使用箭头函数
+
+
 
 ### bind(this)
 

@@ -1,10 +1,10 @@
-# React脚手架 create-react-app 
+# create-react-app 
 
-create-react-app可以快速创建一个急于React脚手架的模版项目
+React脚手架create-react-app
+
+可以快速创建一个急于React脚手架的模版项目
 
 <img src="https://staging-qiita-user-contents.imgix.net/https%3A%2F%2Fqiita-image-store.s3.ap-northeast-1.amazonaws.com%2F0%2F484272%2F52cfad2d-ef8c-b70d-3aa5-ec79b0576737.png?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&s=1bb6e4bac443e2d9d368f6b114b249a2" style="zoom:50%;" />
-
-## 简介
 
 - 整体技术框架：
 
@@ -18,7 +18,7 @@ create-react-app可以快速创建一个急于React脚手架的模版项目
 
 
 
-## 创建和启动项目
+## 创建和启动
 
 1. **全局**安装
 
@@ -70,13 +70,13 @@ We suggest that you begin by typing:
 
 6. 编辑项目的src目录下的App.js文件
 
+7. 打包上线详见  [打包项目]()
 
 
 
 
 
-
-## 基本项目目录结构
+## 目录结构
 
 ```js
 Demo
@@ -88,10 +88,6 @@ Demo
 ```
 
 <img src="https://pbs.twimg.com/media/E2N6q1tVEAAFAIG?format=jpg&name=medium" style="zoom:33%;" />
-
----
-
-### public
 
 #### index.html
 
@@ -143,8 +139,6 @@ SPA单页面应用
   </body>
 </html>
 ```
-
-### src
 
 #### App.js
 
@@ -201,33 +195,7 @@ reportWebVitals();
 
 
 
-## 脚手架常用命令
-
-#### yarn start
-
-启动项目
-
-#### yarn buid
-
-打包项目
-
-#### yarn eject
-
-暴露webpack相关的所有配置文件
-
-**webpack.config.js**	
-
-react脚手架为了防止失误修改webpack的配置文件
-
-默认将所有webpack相关的配置文件全部隐藏
-
-
-
-
-
-
-
-## 组件模块化
+### 组件模块化
 
 ```js
 src
@@ -398,9 +366,7 @@ export default class App extends Component {
 
 
 
-
-
-## CSS样式模块化
+### CSS样式模块化
 
 因为各个自定义组件最终都被引入到了主组件App.js中
 
@@ -470,6 +436,8 @@ export default class Hello extends Component {
 
 ## VSCode插件
 
+快速生成组件文件
+
 ![](https://miro.medium.com/max/1838/1*XgMBj0lGzZs7O6okKg5sFA.png)
 
 **rfc + 回车**  （react function component）
@@ -498,48 +466,19 @@ export default class 组件文件名 extends Component {
 
 
 
-## 组件化编码流程
-
-1. 分析功能，拆分组件
-
-2. 实现静态组件：使用组件实现静态页面效果
-
-3. 实现动态组件：
-
-   - 动态显示初始化数据
-     - 数据类型
-     - 数据名称
-     - 数据保存在那个组件中
-
-   - 交互效果（绑定事件）
-
-
-
-数据存放在状态中
-
-- 仅某个组件自己使用，数据放在自身的state状态中
-- 被很多组件使用，数据放在共同的父组件的statr状态中
-
-
-
-状态在哪，操作状态的方法就放在哪
-
-
-
-父子组件之间的通信
-
-- 父—>子：通过自定义属性传递，通过this.props属性接收
-- 子—>父：父传给子一个函数，子调用函数将数据作为函数参数
-
-
-
-
-
 
 
 
 
 ## 暴露脚手架配置
+
+暴露webpack相关的所有配置文件
+
+**webpack.config.js**	
+
+react脚手架为了防止失误修改webpack的配置文件
+
+默认将所有webpack相关的配置文件全部隐藏
 
 ```bash
 yarn eject
@@ -565,5 +504,38 @@ yarn build
 
 会生成一个bulid文件夹
 
+```
+项目
+｜-build
+```
 
+将build文件夹部署到服务器即可
+
+
+
+### 第三方包 serve
+
+若想在本地模拟一个服务器检查打包好的React
+
+需要借助一个第三方包 serve
+
+来将一个指定文件夹在服务器环境下运行打开
+
+
+
+执行了 yarn build 命令后，终端也会提示：
+
+```bash
+The build folder is ready to be deployed.
+You may serve it with a static server:
+
+  yarn global add serve
+  serve -s build
+```
+
+全局安装 serve
+
+然后在项目目录下模拟服务器开启项目录下的build目录
+
+然后开启`  http://localhost:5000    `打开该服务器
 
