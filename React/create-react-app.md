@@ -466,6 +466,16 @@ export default class 组件文件名 extends Component {
 
 
 
+### Scss配置
+
+```bash
+npm i sass-loader node-sass@5.0.0
+```
+
+
+
+
+
 
 
 

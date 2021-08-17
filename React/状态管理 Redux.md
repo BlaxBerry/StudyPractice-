@@ -46,7 +46,7 @@
 
 
 
-### Action 动作对象
+### Actions 动作对象
 
 > - 通过action creator函数创建并返回action对象给组件
 >
@@ -87,27 +87,28 @@ reducer函数判断并根据type属性内容，对状态执行相对应处理
 
 #### action creator
 
-可以在组件中手写一个action对象然后通过store.dispatch() 传给store
-
-```js
-add = () => {
-  const action = {
-    type: "ADD_NUM",
-    data:{
-      num: 1
-    }
-  };
-  store.dispatch(action)
-}
-```
+> 可以在组件中手写一个action对象，然后通过store.dispatch() 传给store
+>
+> ```js
+> add = () => {
+>   const action = {
+>     type: "ADD_NUM",
+>     data:{
+>       num: 1
+>     }
+>   };
+>   store.dispatch(action)
+> }
+> ```
+>
 
 但开发中多通过自定义的**action creators函数**生成action动作对象
 
-函数返回值是action动作对象
+函数返回值是action动作对象，并分别暴露出所有的action creator函数，
 
-组件的事件中调用该函数获取返回值的action，
+组件中导入需要的action creator函数，事件中调用函数获取返回值action，
 
-然后通过store.dispatch() 传给store
+然后通过s**tore.dispatch()** 把action传给store
 
 ```js
 function addNum_Action(){
@@ -131,7 +132,7 @@ add = () => {
 
 
 
-### Reducer 状态处理函数
+### Reducers 状态处理函数
 
 > - 组件内通过调用**store.dispatch()** 传递action动作描述给store
 > - store立刻将action动作对象 + 旧状态 传给reducer函数处理
@@ -139,14 +140,16 @@ add = () => {
 
 ---
 
-reducer是个函数，用来处理状态state
+reducer是个函数，一个组件对应一个reducer
 
-只有有action发送就会触发reducer函数
-
-根据发送来的action动作对象对状态处理
+用来对Redux管理的状态初进行始化和修改
 
 - 修改旧状态
 - 初始化状态
+
+Reducer第一次触发是store出发，用于初始化状态
+
+后面只要组件发送action就会触发，根据发送来的action的type描述处理状态
 
 然后**return**返回 处理后的新状态 和 状态默认值 给store
 
@@ -156,7 +159,7 @@ reducer是个函数，用来处理状态state
 
 默认接收store传来的两个参数
 
-- 旧的状态（默认undefined）
+- perState旧的状态（默认undefined）
 - action对象描述对象
 
 ```js
@@ -210,7 +213,7 @@ Store负责连接  组件—action—reducer
 
 导入Redux的 createStore方法，
 
-调用方法并传入Reducer创建Store对象
+调用方法并传入某一个Reducer创建Store对象
 
 ```js
 // 引入createStore方法，
@@ -277,7 +280,7 @@ fn = () => {
 
 放在声明周期函数中
 
-- 可用来监听状态变化就获取最新的状态
+- 用来监听状态变化就获取最新的状态
 
 ```js
 componentDidMount(){
@@ -287,15 +290,13 @@ componentDidMount(){
 }
 ```
 
-- 可用来监听状态变化就重新加载页面
+- **用来监听状态变化就重新加载页面**
 
-因为Redux只是个管理公共状态的，不是React自家的产品
+Redux只是个管理公共状态的，不是React自家的产品
 
-Diffing算法加载页面是要靠React来实现
+所以先用Redux监听状态变化，有变化就通知React去重新加载该组件
 
-所以先用Redux监听状态变化，有变化就通知React去重新加载页面
-
-即调用 this.setState()，
+加载页面是要靠React来实现即调用 this.setState()，
 
 因为只是通过该方法重加载页面，所以传入一个空对象即可
 
@@ -306,6 +307,18 @@ componentDidMount(){
   })
 }
 ```
+
+也可一劳永逸，直接在App组件中使用，重新渲染整个App组件
+
+借助diff，监听Redux状态只要发生改就重新渲染用到了该状态的组件
+
+```react
+store.subscribe(()=>{
+  ReactDOM.render(<App/>, doucment.getElementDyId('root'))
+})
+```
+
+
 
 
 
@@ -413,6 +426,62 @@ class Demo extends Component {
         )
     }
 }
+```
+
+
+
+
+
+
+
+## 异步Action
+
+组件传递的action必须是个JS对象
+
+但是通过一个第三方中间件可将action改为函数形式
+
+函数形式的action被称为异步action
+
+- 对象形式的Action：同步action
+
+- 函数形式的Action：异步action（必须借助**redux-thunk**）
+
+```js
+function actionCreator(data){
+  return ()=>{
+    setTimeout(()=>{
+      store.dispatch({
+        type: '描述',
+        data
+      })
+    },1000)
+  }
+}
+```
+
+异步action并不是必须的
+
+1. 可在组件中通过定时器，异步发送action
+
+```js
+incremenAsync = () => {
+  const { value } = this.selectVal;
+  setTimeout(() => {
+    store.dispatch(actionCreator(Number(value)))
+  }, 1000)
+}
+```
+
+2. 通过redux-thunk实现在action creator中异步发送action
+
+```js
+import { creatStore, applyMiddleware } from 'redux';
+
+import peducer from '../prducer/index.js'
+
+import thunk from 'redux-thunk';
+
+export default creatStore(peducer, applyMiddleware(thunk))
 ```
 
 

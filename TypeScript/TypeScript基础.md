@@ -675,6 +675,10 @@ tsc -w
 
 ### 配置 tsconfig.json
 
+```bash
+tsc --init
+```
+
 用于配置tsc编译器的编译选项
 
 一般JSON文件不能些注释，但是这个文件可以写注释

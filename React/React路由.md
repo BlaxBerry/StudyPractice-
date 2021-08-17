@@ -635,8 +635,28 @@ const Component02 = lazy(()=> impor'./Component02');
 
 
 
+## 路由组件 一般组件
 
+由Router匹配的组件叫路由组件，其余都是一般组件
 
-```
+路由组件上自带props属性，里面包含history、location、match
+
+### witchRouter()
+
+一般组件调用时不传入数据的话props属性是个空对象
+
+可使用withRouter方法将一般组件转换为路由组件
+
+```react
+import { withRouter } from 'react-router';
+
+function demo(props){
+  console.log(props)  
+  return (
+  	<div>Hello</div>
+  )
+}
+
+export default withRouter(demo)
 ```
 
