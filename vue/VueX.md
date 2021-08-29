@@ -982,3 +982,57 @@ export default {
 <style></style>
 ```
 
+
+
+
+
+
+
+## axios
+
+
+
+action中调用axios，声明周期中dispatch调用action
+
+```js
+export default new vue.Store({
+  state:{
+    list:[]
+  },
+  mutations:{
+    init(state, data){
+      state.list = data
+    }
+  },
+  actions:{
+    getList(context){
+      axios.get('URL').then(({data}) => {
+        context.commit('init',data)
+      })
+    }
+  }
+})
+```
+
+```vue
+<template>
+  <div>
+    {{ list }}
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+export default {
+  computed:{
+    ...mapState(['list'])
+  },
+  created(){
+    this.$store.dispatch('getList')
+  }
+};
+</script>
+
+<style></style>
+```
+
