@@ -847,11 +847,319 @@ export default {
 
 
 
+
+
 ## 监听属性 watch
 
+对变化的属性进行监视
+
+```js
+import { watch } from 'vue'
+```
 
 
 
+### 监视ref定义的响应式数据
+
+ref定义的数据是简单数据，不需要开启深度监视
+
+#### 一个ref定义的简单数据
+
+```js
+setup(){
+  watch( 
+    要监视的数据, (变化后的该数据, 变化前的该数据) => { }
+  )
+}
+```
+
+如下：
+
+```vue
+<template>
+	<h2>{{ sum }}</h2>
+	<button @click="sum++">+1</button>
+</template>
+
+<script>
+import { ref, watch } from "vue";
+export default {
+  setup() {
+    let sum = ref(0)
+    
+    watch(sum, (newVal, oldVal) => {
+      console.log("New:", newVal, "Former:", oldVal);
+    })
+    
+    return {
+      sum,
+    };
+  },
+};
+</script>
+```
+
+---
+
+#### 多个ref定义的简单数据
+
+Vue2中的watch是个配置项，不能重复使用
+
+Vue3中的watch是组合式API可以多次调用
+
+```js
+setup(){
+  watch( 数据1, (变化后的该数据, 变化前的该数据) => { })
+  watch( 数据2, (变化后的该数据, 变化前的该数据) => { })
+  watch( 数据3, (变化后的该数据, 变化前的该数据) => { })
+}
+```
+
+---
+
+#### 同时监视多个ref定义的简单数据
+
+```js
+setup(){
+  watch(
+    [数据1,数据2,数据3],
+    (变化后的该数据, 变化前的该数据) => { }
+  )
+}
+```
+
+
+
+### 监视reactive定义的对象
+
+#### 对象的全部属性
+
+```js
+setup(){
+  watch(
+    要监视的对象, (newVal, oldVal) => {}
+  )
+}
+```
+
+监视reactive定义的对象的全部属性据时
+
+- **强制开启深度监视**，deep配置无效
+
+- **无法获取正确的oldValue**，
+
+  oldValue的值和newValue相同
+
+```vue
+<template>
+  <div>
+    <h2>{{ person }}</h2>
+    <button @click="person.name += '!'">name+!</button>
+    <button @click="person.age++">age+1</button>
+  </div>
+</template>
+
+<script>
+import { reactive, watch } from "vue";
+export default {
+  setup() {
+    let person = reactive({
+      name: "andy",
+      age: 20,
+    });
+    watch(
+      person, (newVal, oldVal) => {
+        console.log("New:", newVal, "Former:", oldVal);
+      },
+    );
+    return {
+      person,
+    };
+  },
+};
+</script>
+```
+
+```js
+NewVal: Proxy {name: "andy!", age: 20} 
+OldVal: Proxy {name: "andy!", age: 20}
+```
+
+
+
+#### 对象的一个属性
+
+若监视reactive定义的对象的某个属性，
+
+需要通过**函数形式**
+
+```js
+setup(){
+  watch(
+    () => 要监视的对象.属性,
+    (newVal, oldVal) => {}
+  )
+}
+```
+
+如下：
+
+```vue
+<template>
+  <div>
+    <h2>{{ person.name }}</h2>
+    <button @click="person.name += '!'">name+!</button>
+  </div>
+</template>
+
+<script>
+import { reactive, watch } from "vue";
+export default {
+  setup() {
+    let person = reactive({
+      name: "andy",
+    });
+    watch(
+      () => person.name,
+      (newVal, oldVal) => {
+        console.log("New:", newVal, "Former:", oldVal);
+      }
+    );
+    return {
+      person,
+    };
+  },
+};
+</script>
+```
+
+
+
+#### 对象的某些属性
+
+```js
+setup(){
+  watch(
+    [ 
+      () => 要监视的对象.属性, 
+      () => 要监视的对象.属性,
+      () => 要监视的对象.属性
+    ],
+    (newVal, oldVal) => {}
+  )
+}
+```
+
+
+
+#### 对象的对象属性中的全部属性
+
+若监视reactive定义的对象的某个对象属性
+
+需要开启深度监视
+
+```js
+setup(){
+  let person = reactive({
+  	name: 'Andy',
+    job: {
+      name: '前端',
+      sallary: '20k'
+    }
+  })
+}
+```
+
+```js
+setup(){
+  watch( 
+    () => 要监视的对象.对象属性
+    (变化后的该数据, 变化前的该数据) => { },
+    {
+      deep: true, // 深度监视
+    }
+  )
+}
+```
+
+
+
+
+
+### watch的配置
+
+#### immediate
+
+```js
+setup(){
+  watch( 
+    数据,
+    (变化后的该数据, 变化前的该数据) => { },
+    {
+      immediate: true, // 立刻监视
+    }
+  )
+}
+```
+
+```vue
+<template>
+  <div>
+    <h2>{{ sum }}</h2>
+    <button @click="sum++">+</button>
+  </div>
+</template>
+
+<script>
+import { ref, watch } from "vue";
+export default {
+  setup() {
+    let sum = ref(0);
+    watch(
+      sum,
+      (newVal, oldVal) => {
+        console.log("New:", newVal, "Former:", oldVal);
+        // New: 0 Former: undefined
+      },
+      { immediate: true }
+    );
+    return {
+      sum,
+    };
+  },
+};
+</script>
+```
+
+---
+
+#### deep
+
+```js
+setup(){
+  watch( 
+    数据,
+    (变化后的该数据, 变化前的该数据) => { },
+    {
+      deep: true, // 深度监视
+    }
+  )
+}
+```
+
+- ref 定义的响应式数据
+
+  因为是简单数据，不需要开启深度监视
+
+- reactive 定义的响应式数据
+
+  - 若是监视该数据的全部属性：
+
+    默认强制开启深度监视，deep配置无效
+
+  - 若是监视该数据的某个对象属性的属性：
+
+    需要开启深度监视该对象属性的属性
 
 
 
@@ -859,7 +1167,9 @@ export default {
 
 ## Composition API
 
-组合式API
+组合式API，即一堆需要单独引入的函数
+
+比如：ref、reactive、computed、watch....
 
 
 
